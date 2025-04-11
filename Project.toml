@@ -1,0 +1,14 @@
+name = "FEMFractionalQuadrature"
+uuid = "224d28b5-65d5-4fc1-b150-12919de04b0c"
+authors = ["David Gomez-Castro <david@gomezcastro.xyz>"]
+version = "0.1.0"
+
+[deps]
+JuliaFormatter = "98e50ef6-434e-11e9-1051-2b60c6c9e899"
+Plots = "91a5bcdd-55d7-5caf-9e0b-520d859cae80"
+Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
+
+[compat]
+JuliaFormatter = "2.1.0"
+Plots = "1.40.11"
+Test = "1.11.0"
