@@ -15,7 +15,6 @@ function quadrature_integral(quadrature::Vector{Float64}, locations::Vector{Unio
     IJ = unique(vcat(range(i-2, i+1), range(j-2, j+1))) #select the elements indices of support for ϕ_i and ϕ_j
 
     #select indices such that at least one quadrature points lies in the supprt of ϕ_i, ϕ_j
-    #ind_Quad = [(k,l) for k in eachindex(quadrature) for l in eachindex(quadrature) if locations[k] in IJ || locations[l] in IJ]
 
     return 2 * sum((abs(quadrature[k]-quadrature[l]) > ε) * abs(k-l)^(-1-2*s)*
     (FEM1d_ϕ(mesh[i], quadrature[k], h) - FEM1d_ϕ(mesh[i], quadrature[l], h))*
@@ -25,7 +24,7 @@ function quadrature_integral(quadrature::Vector{Float64}, locations::Vector{Unio
 end
 
 function assemble_stiffness(mesh::Vector{Float64}, h::Float64, quadrature::Vector{Float64}, 
-    ρ::Float64, s::Float64, monitor::Int = 0)
+    ρ::Float64, s::Float64)
     "Function assembling the stiffness matrix for the fractional Poisson equation"
 
     nNode = length(mesh)
@@ -42,12 +41,10 @@ function assemble_stiffness(mesh::Vector{Float64}, h::Float64, quadrature::Vecto
 
     ε = 2 * ρ 
 
-    if monitor == 1
-        @threads for i in range(2,nElem)
-            for j in range(i,nElem)
-                #ρ^2 gets simplified by ρ^(1+2s)
-                A[i, j] = ρ^(1-2*s) * quadrature_integral(quadrature, locations, mesh, h, i, j, s, ε)
-            end
+    @threads for i in range(2,nElem)
+        for j in range(i,nElem)
+            #ρ^2 gets simplified by ρ^(1+2s)
+            A[i, j] = ρ^(1-2*s) * quadrature_integral(quadrature, locations, mesh, h, i, j, s, ε)
         end
     end
     
