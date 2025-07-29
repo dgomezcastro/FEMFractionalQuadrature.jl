@@ -1,10 +1,11 @@
 module FEMFractionalQuadrature
 
-greet() = print("Hello World!")
+abstract type FEM1d end
+include("lfem.jl")
+include("wfem.jl")
+include("quadrature.jl")
+include("assemble.jl")
 
-export better_greeting
-better_greeting() = print("Hello!!!")
-
-a = 1
+include("exactsolution.jl")
 
 end # module FEMFractionalQuadrature

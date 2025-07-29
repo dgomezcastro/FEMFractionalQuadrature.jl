@@ -1,5 +1,6 @@
 using Test
 
+using FEMFractionalQuadrature
 import FEMFractionalQuadrature
 
-include("test_set_variable.jl")
+include("test_exact_solution.jl")
