@@ -15,7 +15,7 @@ struct Quadrature1dHsNorm
         domain_quad = collect(-R+ρ/2:ρ:R-ρ/2)
         weights = [abs(domain_quad[k] - domain_quad[1])^(-1 - 2 * s) for k in 2:length(domain_quad)]
         W_Matrix = SymmetricToeplitz([0; weights])
-        C_W = ρ^(-2 * s) * zeta(1 + 2 * s)
+        C_W = ρ^(-2 * s) * 2 * zeta(1 + 2 * s)
 
         return new(domain_quad, ρ, C_W, W_Matrix, s)
     end
