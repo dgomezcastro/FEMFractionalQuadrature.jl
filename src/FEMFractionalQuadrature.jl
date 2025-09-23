@@ -1,10 +1,7 @@
 module FEMFractionalQuadrature
 
-greet() = print("Hello World!")
+using LinearAlgebra, Base.Threads
 
-export better_greeting
-better_greeting() = print("Hello!!!")
-
-a = 1
+include("1d/1d.jl")
 
 end # module FEMFractionalQuadrature
