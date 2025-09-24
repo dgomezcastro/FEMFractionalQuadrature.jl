@@ -13,13 +13,15 @@ u(x) = max(1 - x^2, 0.0)^s * gamma(1 / 2) / (4^s * gamma((1 + 2 * s) / 2) * gamm
 
 hs = 2. .^ -(2:4)
 errs = zeros(length(hs))
+
+quad_fine = Quadrature1dHsNorm(a, b, s, hs[end]^3)
 for (i, h) in enumerate(hs)
     ρ = h^3
     basis = WFEMIntervalBasis(a, b, h, s, dist=x -> max(1 - x^4, 0))
     quad = Quadrature1dHsNorm(a, b, s, ρ)
     prob = FractionalLaplaceInterval(a, b, s, f; basis=basis, quad=quad)
     uh = solve(prob)
-    errs[i] = Hsseminorm(quad, x -> u(x) - uh(x))
+    errs[i] = Hsseminorm(quad_fine, x -> u(x) - uh(x))
 end
 plot(hs, errs, marker=:circle, xscale=:log10, yscale=:log10, label="Error", xlabel=L"h", ylabel=L"[u - u_h]_{H^s}")
 plot!(hs, hs .^ (2 - s), label=L"h^{2-s}", linestyle=:dash)
