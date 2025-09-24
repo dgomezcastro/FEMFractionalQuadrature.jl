@@ -9,14 +9,15 @@ a = -1.
 b = 1.
 
 f(x) = 1.0
+hs = 2. .^ -(0:5)
+ss = 0.2:0.2:0.8
 
-for s in 0.2:0.2:0.8
+ρ = 2^-11
+for s in ss
     @show s
     u(x) = max(1 - x^2, 0.0)^s * gamma(1 / 2) / (4^s * gamma((1 + 2 * s) / 2) * gamma(1 + s))
-    hs = 2. .^ -(2:5)
     errs = zeros(length(hs))
 
-    ρ = 2^-11
     @show ρ
     quad = Quadrature1dHsNorm(a, b, s, ρ)
     for (i, h) in enumerate(hs)

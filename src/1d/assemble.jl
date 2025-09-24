@@ -23,8 +23,10 @@ function assemble(basis::AbstractFEM1dBasis, quad::Quadrature1dHsNorm, f::Functi
 
         A[i, i:basisdim] = [Hssemiprod(quad, Ξ[j, :], Ξ[i, :], convV=Ψ) for j in range(i, basisdim)]
     end
-
-    b = [integral(basis, i, f) for i in 1:dimension(basis)]
-
+    b = zeros(dimension(basis))
+    xs = minimum(basis.mesh):quad.ρ:maximum(basis.mesh)
+    for i = 1:dimension(basis)
+        b[i] = quad.ρ * sum(f(x) * ϕ(basis, i, x) for x in xs)
+    end
     return Symmetric(A), b
 end
