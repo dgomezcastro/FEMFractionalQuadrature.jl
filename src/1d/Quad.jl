@@ -1,7 +1,7 @@
 
 using ToeplitzMatrices, SpecialFunctions, SparseArrays
 
-export Quadrature1dHsNorm
+export Quadrature1dHsNorm, Hsseminorm
 
 abstract type AbstractQuadrature1dHsNorm end
 
@@ -37,7 +37,10 @@ end
 function Hssemiprod(quad::Quadrature1dHsNorm, u::Function, v::Function)
     U = [u(x) for x in quad.domain_quad]
     V = [v(x) for x in quad.domain_quad]
-    return Hsseminorm(quad, U, V)
+    return Hssemiprod(quad, U, V)
 end
 
-Hsseminorm(quad::Quadrature1dHsNorm, u::Function) = sqrt(Hsseminorm(quad, u, u))
+function Hsseminorm(quad::Quadrature1dHsNorm, u::Function)
+    U = [u(x) for x in quad.domain_quad]
+    return sqrt(Hssemiprod(quad, U, U))
+end
