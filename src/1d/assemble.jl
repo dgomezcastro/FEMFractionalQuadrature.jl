@@ -1,7 +1,6 @@
 export assemble
 
 function assemble(basis::AbstractFEM1dBasis, quad::Quadrature1dHsNorm, f::Function)
-
     basisdim = dimension(basis)
     ρ = quad.ρ
 

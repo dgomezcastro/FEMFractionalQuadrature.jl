@@ -3,7 +3,9 @@ using ToeplitzMatrices, SpecialFunctions, SparseArrays
 
 export Quadrature1dHsNorm
 
-struct Quadrature1dHsNorm
+abstract type AbstractQuadrature1dHsNorm end
+
+struct Quadrature1dHsNorm <: AbstractQuadrature1dHsNorm
     domain_quad::Vector{Float64}
     ρ::Float64
     C_W::Float64

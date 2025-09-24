@@ -1,12 +1,12 @@
-export WFEM1dBasis
+export WFEMIntervalBasis
 
-struct WFEM1dBasis <: AbstractFEM1dBasis
+struct WFEMIntervalBasis <: AbstractFEM1dBasis
     h::Float64
     mesh::Vector{Float64}
     s::Float64
     dist::Function
 
-    function WFEM1dBasis(a::Number, b::Number, h::Float64, s::Float64; dist=x -> distance_parabolic((x - (a + b) / 2) * 2 / (b - a)))
+    function WFEMIntervalBasis(a::Number, b::Number, h::Float64, s::Float64; dist=x -> distance_parabolic((x - (a + b) / 2) * 2 / (b - a)))
         mesh = collect(Float64, a:h:b)
         return new(h, mesh, s, dist)
     end
@@ -29,7 +29,7 @@ end
 """
 Gives the i-th element of the basis at point `xx`
 """
-function ϕ(basis::WFEM1dBasis, i::Int64, xx::Float64)
+function ϕ(basis::WFEMIntervalBasis, i::Int64, xx::Float64)
     xi = basis.mesh[i]
     if abs(xx .- xi) > basis.h
         return 0.0
@@ -39,9 +39,9 @@ function ϕ(basis::WFEM1dBasis, i::Int64, xx::Float64)
 
 end
 
-dimension(basis::WFEM1dBasis) = length(basis.mesh)
+dimension(basis::WFEMIntervalBasis) = length(basis.mesh)
 
-function integral(basis::WFEM1dBasis, i, f::Function)
+function integral(basis::WFEMIntervalBasis, i, f::Function)
     x = basis.mesh[i]
     return basis.h * basis.dist(x)^basis.s * f(x)
 end

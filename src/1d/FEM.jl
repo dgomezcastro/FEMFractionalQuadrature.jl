@@ -1,6 +1,6 @@
-export PLFEM1dBasisDirichlet
+export PLFEMBasisIntervalDirichlet
 
-struct PLFEM1dBasisDirichlet <: AbstractFEM1dBasis
+struct PLFEMBasisIntervalDirichlet <: AbstractFEM1dBasis
     h::Float64
     mesh::Vector{Float64}
 
@@ -13,7 +13,7 @@ end
 """
 Gives the i-th element of the basis at point `xx`
 """
-function ϕ(basis::PLFEM1dBasisDirichlet, i, xx)
+function ϕ(basis::PLFEMBasisIntervalDirichlet, i, xx)
     xi = basis.mesh[i+1]
     if abs(xx .- xi) > basis.h
         return 0.0
@@ -23,7 +23,7 @@ function ϕ(basis::PLFEM1dBasisDirichlet, i, xx)
 
 end
 
-dimension(basis::PLFEM1dBasisDirichlet) = length(basis.mesh) - 2
+dimension(basis::PLFEMBasisIntervalDirichlet) = length(basis.mesh) - 2
 
-integral(basis::PLFEM1dBasisDirichlet, i, f::Function) = basis.h * f(basis.mesh[i+1])
+integral(basis::PLFEMBasisIntervalDirichlet, i, f::Function) = basis.h * f(basis.mesh[i+1])
 
