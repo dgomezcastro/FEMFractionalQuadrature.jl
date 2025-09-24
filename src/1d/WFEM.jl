@@ -29,19 +29,24 @@ end
 """
 Gives the i-th element of the basis at point `xx`
 """
-function ϕ(basis::WFEMIntervalBasis, i::Int64, xx::Float64)
+function (basis::WFEMIntervalBasis)(i::Int64, x::Float64)
     xi = basis.mesh[i]
-    if abs(xx .- xi) > basis.h
+    if abs(x .- xi) > basis.h
         return 0.0
     else
-        return (1.0 - abs(xx - xi) / basis.h) * basis.dist(xx)^basis.s
+        return (1.0 - abs(x - xi) / basis.h) * basis.dist(x)^basis.s
     end
-
 end
 
 dimension(basis::WFEMIntervalBasis) = length(basis.mesh)
 
+"""
+Approximation of ∫_Ω f φ_i with error less that h^2
+"""
+#TODO improve the integration formula
 function integral(basis::WFEMIntervalBasis, i, f::Function)
-    x = basis.mesh[i]
-    return basis.h * basis.dist(x)^basis.s * f(x)
+    xi = basis.mesh[i]
+    σ = basis.h^(2 / basis.s)
+    xs = (xi-basis.h):σ:(xi+basis.h)
+    return σ * sum(basis(i, x) * f(x) for x in xs)
 end

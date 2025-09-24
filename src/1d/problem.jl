@@ -20,8 +20,9 @@ end
 
 function solve(prob::FractionalLaplaceInterval)
     A,b = assemble(prob.basis, prob.quad, prob.f)
+    @debug "Solving linear system"
     U = A \ b
     return FractionalLaplaceIntervalSolution(prob.basis,U)
 end
 
-(s::FractionalLaplaceIntervalSolution)(x) = sum(s.coeffs[i]*ϕ(s.basis, i, x) for i=1:dimension(s.basis))
+(s::FractionalLaplaceIntervalSolution)(x) = sum(s.coeffs[i] * s.basis(i, x) for i=1:dimension(s.basis))

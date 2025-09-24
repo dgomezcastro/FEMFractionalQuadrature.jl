@@ -6,7 +6,7 @@ function evaluation(basis::AbstractFEM1dBasis, quad::Quadrature1dHsNorm)
 
     Ξ = zeros(basisdim, nQuad)
     @threads for i in range(1, basisdim)
-        Ξ[i, :] = [ϕ(basis, i, x) for x in quad.domain_quad]
+        Ξ[i, :] = [basis(i, x) for x in quad.domain_quad]
     end
     return sparse(Ξ)
 end
@@ -16,17 +16,18 @@ function assemble(basis::AbstractFEM1dBasis, quad::Quadrature1dHsNorm, f::Functi
 
     A = zeros(basisdim, basisdim)
 
+    @debug "Evaluation of basis over the quadrature mesh"
     Ξ = evaluation(basis, quad)
 
+    @debug "Matrix assembly"
     @threads for i in range(1, basisdim)
         Ψ = kernelconv(quad, Ξ[i, :])
 
         A[i, i:basisdim] = [Hssemiprod(quad, Ξ[j, :], Ξ[i, :], convV=Ψ) for j in range(i, basisdim)]
     end
-    b = zeros(dimension(basis))
-    xs = minimum(basis.mesh):quad.ρ:maximum(basis.mesh)
-    for i = 1:dimension(basis)
-        b[i] = quad.ρ * sum(f(x) * ϕ(basis, i, x) for x in xs)
-    end
+
+    @debug "RHS assembly"
+    b = [integral(basis, i, f) for i = 1:dimension(basis)]
+
     return Symmetric(A), b
 end

@@ -14,6 +14,7 @@ struct Quadrature1dHsNorm <: AbstractQuadrature1dHsNorm
     Cds::Float64
 
     function Quadrature1dHsNorm(a::Float64, b::Float64, s::Float64, ρ::Float64)
+        @debug "Initializing quadrature"
         R = 1.5 * (b - a)
         domain_quad = collect(-R+ρ/2:ρ:R-ρ/2)
         weights = [abs(domain_quad[k] - domain_quad[1])^(-1 - 2 * s) for k in 2:length(domain_quad)]

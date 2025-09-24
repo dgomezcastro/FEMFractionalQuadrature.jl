@@ -13,12 +13,12 @@ end
 """
 Gives the i-th element of the basis at point `xx`
 """
-function ϕ(basis::PLFEMBasisIntervalDirichlet, i, xx)
+function (basis::PLFEMBasisIntervalDirichlet)(i::Int64, x::Float64)
     xi = basis.mesh[i+1]
-    if abs(xx .- xi) > basis.h
+    if abs(x .- xi) > basis.h
         return 0.0
     else
-        return 1.0 - abs(xx - xi) / basis.h
+        return 1.0 - abs(x - xi) / basis.h
     end
 
 end
