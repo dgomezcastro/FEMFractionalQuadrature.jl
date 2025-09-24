@@ -1,26 +1,30 @@
 export assemble
 
+function evaluation(basis::AbstractFEM1dBasis, quad::Quadrature1dHsNorm)
+    nQuad = length(quad.domain_quad)
+    basisdim = dimension(basis)
+
+    Ξ = zeros(basisdim, nQuad)
+    @threads for i in range(1, basisdim)
+        Ξ[i, :] = [ϕ(basis, i, x) for x in quad.domain_quad]
+    end
+    return sparse(Ξ)
+end
+
 function assemble(basis::AbstractFEM1dBasis, quad::Quadrature1dHsNorm, f::Function)
     basisdim = dimension(basis)
-    ρ = quad.ρ
 
     A = zeros(basisdim, basisdim)
 
     Ξ = evaluation(basis, quad)
 
     @threads for i in range(1, basisdim)
-        Ψ = ρ * quad.W_Matrix * Ξ[i, :]
+        Ψ = kernelconv(quad, Ξ[i, :])
 
-        for j in range(i, basisdim)
-            I1 = ρ * quad.C_W * Ξ[j, :]'Ξ[i, :]
-            I2 = ρ * Ξ[j, :]'Ψ
-            A[i, j] = 2 * (I1 - I2)
-        end
+        A[i, i:basisdim] = [Hssemiprod(quad, Ξ[j, :], Ξ[i, :], convV=Ψ) for j in range(i, basisdim)]
     end
-
-    Cds = 4^basis.s * gamma(1 / 2 + basis.s) / (sqrt(pi) * abs(gamma(-basis.s))) / 2
 
     b = [integral(basis, i, f) for i in 1:dimension(basis)]
 
-    return Symmetric(Cds * A), b
+    return Symmetric(A), b
 end

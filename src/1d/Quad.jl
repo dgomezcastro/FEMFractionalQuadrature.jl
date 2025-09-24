@@ -11,6 +11,7 @@ struct Quadrature1dHsNorm <: AbstractQuadrature1dHsNorm
     C_W::Float64
     W_Matrix::AbstractMatrix
     s::Float64
+    Cds::Float64
 
     function Quadrature1dHsNorm(a::Float64, b::Float64, s::Float64, ρ::Float64)
         R = 1.5 * (b - a)
@@ -18,21 +19,25 @@ struct Quadrature1dHsNorm <: AbstractQuadrature1dHsNorm
         weights = [abs(domain_quad[k] - domain_quad[1])^(-1 - 2 * s) for k in 2:length(domain_quad)]
         W_Matrix = SymmetricToeplitz([0; weights])
         C_W = ρ^(-2 * s) * 2 * zeta(1 + 2 * s)
+        Cds = 4^s * gamma(1 / 2 + s) / (sqrt(pi) * abs(gamma(-s))) / 2
 
-        return new(domain_quad, ρ, C_W, W_Matrix, s)
+        return new(domain_quad, ρ, C_W, W_Matrix, s, Cds)
     end
 
 end
 
-function evaluation(basis::AbstractFEM1dBasis, quad::Quadrature1dHsNorm)
-    nQuad = length(quad.domain_quad)
-    basisdim = dimension(basis)
+kernelconv(quad, V) = quad.ρ * quad.W_Matrix * V
 
-    Ξ = zeros(basisdim, nQuad)
-    @threads for i in range(1, basisdim)
-        for kk in range(1, nQuad)
-            Ξ[i, kk] = ϕ(basis, i, quad.domain_quad[kk])
-        end
-    end
-    return sparse(Ξ)
+function Hssemiprod(quad::Quadrature1dHsNorm, U::AbstractVector, V::AbstractVector; convV=kernelconv(quad, V))
+    I1 = quad.ρ * quad.C_W * U'V
+    I2 = quad.ρ * U'convV
+    return quad.Cds * 2 * (I1 - I2)
 end
+
+function Hssemiprod(quad::Quadrature1dHsNorm, u::Function, v::Function)
+    U = [u(x) for x in quad.domain_quad]
+    V = [v(x) for x in quad.domain_quad]
+    return Hsseminorm(quad, U, V)
+end
+
+Hsseminorm(quad::Quadrature1dHsNorm, u::Function) = sqrt(Hsseminorm(quad, u, u))
