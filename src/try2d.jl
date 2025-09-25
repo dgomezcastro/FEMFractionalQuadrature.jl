@@ -3,6 +3,8 @@ import .FEMFractionalQuadrature2d
 using .FEMFractionalQuadrature2d: WFEMBasisDirichlet, Quadrature2dHsNorm, assemble, distance
 using SpecialFunctions, Plots
 
+"TODO the simulation should go in another folder (from stefano to stefano)!!"
+
 s = 0.7
 h = 0.25
 ρ = 0.0625
