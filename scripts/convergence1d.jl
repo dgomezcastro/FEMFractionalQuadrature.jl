@@ -9,7 +9,8 @@ a = -1.
 b = 1.
 
 f(x) = 1.0
-ss = 0.8:-0.2:0.2
+# ss = 0.8:-0.2:0.2
+ss = [0.2]
 hs = 2. .^ -(0:4)
 errs = zeros(length(ss), length(hs))
 
@@ -17,10 +18,10 @@ errs = zeros(length(ss), length(hs))
 ρs = zeros(length(ss), length(hs))
 ρs .= ρ
 
-dist = x -> max(1 - x^4, 0)
-dist_label = L"(1-x^4)_+"
+dist_p = 4
+dist_label = latexstring("(1-x^$(dist_p))_+")
 
-filename = "figs/convergence1d_rho$(ρ)"
+filename = "figs/convergence1d_distancep$(dist_p)_rho$(ρ)"
 
 for (i, s) in enumerate(ss)
     @show s
@@ -30,7 +31,7 @@ for (i, s) in enumerate(ss)
     for (j, h) in enumerate(hs)
         @show j / length(hs)
         quad = Quadrature1dHsNorm(a, b, s, ρs[i, j])
-        basis = WFEMIntervalBasis(a, b, h, s, dist=dist)
+        basis = WFEMIntervalBasis(a, b, h, s, distance_power=dist_p)
         prob = FractionalLaplaceInterval(a, b, s, f; basis=basis, quad=quad)
         uh = solve(prob)
         errs[i, j] = Hsseminorm(quad_fine, x -> u(x) - uh(x))

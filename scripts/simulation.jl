@@ -1,7 +1,7 @@
 using FEMFractionalQuadrature
 using Plots, LaTeXStrings, SpecialFunctions
 
-s = 0.6
+s = 0.2
 a = -1.
 b = 1.
 
@@ -10,7 +10,7 @@ u(x) = (1-x^2)^s * gamma(1/2) / (4^s*gamma((1+2*s)/2)*gamma(1+s))
 
 h = 2. ^-2
 ρ = 2. ^-6
-basis = WFEMIntervalBasis(a, b, h, s, dist=x->max(1-x^4,0))
+basis = WFEMIntervalBasis(a, b, h, s, distance_power = 4)
 quad = Quadrature1dHsNorm(a, b, s, ρ)
 prob = FractionalLaplaceInterval(a,b,s,f; basis=basis,quad=quad)
 @time uh = solve(prob)
