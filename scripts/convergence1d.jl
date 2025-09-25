@@ -19,7 +19,7 @@ errs = zeros(length(ss), length(hs))
 ρs .= ρ
 
 dist_p = 4
-dist_label = latexstring("(1-x^$(dist_p))_+")
+dist_label = latexstring("(1-|x|^$(dist_p))_+")
 
 filename = "figs/convergence1d_distancep$(dist_p)_rho$(ρ)"
 
