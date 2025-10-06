@@ -75,8 +75,8 @@ for s in S
 
     if s == 0.1
         c = (ERR_L2)[1] / (H .^ (2))[1]
-        plot!(plt, (H), H .^ (2) * c / 2, tickfontsize=t_fs, guidefontsize=g_fs, legendfontsize=l_fs,
-            linestyle=:dash, label=L"c h^2", color="black",
+        plot!(plt, (H), H .^ (2) * c / 2, size=(1300, 1000), tickfontsize=t_fs, guidefontsize=g_fs, legendfontsize=l_fs,
+            linestyle=:dash, label=L"c h^2", color="black", margin=10mm,
             xscale=:log10, yscale=:log10)
     end
 
@@ -89,7 +89,7 @@ for s in S
     c = (ERR_L2)[1] / (H .^ (exp))[1]
     plot!(plt, (H), H .^ (exp) * c, tickfontsize=t_fs, guidefontsize=g_fs, legendfontsize=l_fs,
         linestyle=:dash, label=" ", color=COLORS[k],
-        xscale=:log10, yscale=:log10)
+        xscale=:log10, yscale=:log10, margin=10mm)
     xlabel!(plt, L"h", guidefontsize=g_fs)
     ylabel!(plt, L"||u^{WFEM}-u^\ast||_{L^2(\Omega)}", guidefontsize=g_fs)
 

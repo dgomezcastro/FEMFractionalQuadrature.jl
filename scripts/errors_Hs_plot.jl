@@ -54,7 +54,7 @@ for s in S
 
     plot!(plt, H, (ERR_HS), size=(1300, 1000), legendfontsize=l_fs,
         guidefontsize=g_fs, tickfontsize=t_fs, marker=:circle, markersize=8, markerstrokewidth=0, legend=:bottomright,
-        label=L"s=" * "$(s)",
+        label=L"s=" * "$(s)", margin=10mm,
         xscale=:log10, yscale=:log10, color=COLORS[k])
     c = (ERR_HS)[1] / (H .^ (2-s))[1]
     plot!(plt, (H), H .^ (2 - s) * c, show=true, tickfontsize=t_fs, guidefontsize=g_fs, legendfontsize=l_fs,
