@@ -58,7 +58,7 @@ for s in S
         xscale=:log10, yscale=:log10, color=COLORS[k])
     c = (ERR_HS)[1] / (H .^ (2-s))[1]
     plot!(plt, (H), H .^ (2 - s) * c, show=true, tickfontsize=t_fs, guidefontsize=g_fs, legendfontsize=l_fs,
-        linestyle=:dash, label=L" ", color=COLORS[k], margin=10mm,
+        linestyle=:dash, label=L"  ", color=COLORS[k], margin=10mm,
         xscale=:log10, yscale=:log10)
     xlabel!(plt, L"h", guidefontsize=g_fs)
     ylabel!(plt, L"[u^{WFEM} - u^*]_{H^s(\mathbb{R}^d)}", guidefontsize=g_fs)
