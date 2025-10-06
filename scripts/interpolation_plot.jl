@@ -1,8 +1,4 @@
 using FEMFractionalQuadrature
-include("src/FEMFractionalQuadrature.jl")
-include("norms.jl")
-import .FEMFractionalQuadrature: WFEMIntervalBasis, Quadrature1dHsNorm, assemble, distance_quartic, dimension, PLFEMBasisIntervalDirichlet
-import .LpNorms: L1_trapz, L2_trapz, L2norm, Hs_seminorm_trapz, Hs_norm_trapz
 using LinearAlgebra, Plots, Printf, SpecialFunctions, LaTeXStrings, Interpolations, Printf, DelimitedFiles, FilePathsBase
 
 function linear_interpolator(xs::Vector{<:Real}, ys::Vector{<:Real})
@@ -63,7 +59,6 @@ solquotdelta_2(x) = cnst_sol
 I_h_4 = linear_interpolator(mesh, [solquotdelta_4(mesh[1]); sol(mesh[2:end-1]) ./ (delta_4(mesh[2:end-1]) .^ s); solquotdelta_4(mesh[end])])
 I_h_2 = linear_interpolator(mesh, [solquotdelta_2(mesh[1]); sol(mesh[2:end-1]) ./ (delta_2(mesh[2:end-1]) .^ s); solquotdelta_2(mesh[end])])
 
-legend_location = 1
 legend_loc = :bottomright
 g_fs = 30
 l_fs = 15
@@ -86,7 +81,7 @@ plot!(plt1, mesh, delta_4(mesh) .^ s .* I_h_4.(mesh), label=false, show=true, si
 plot!(plt1, mesh, delta_2(mesh) .^ s .* I_h_2.(mesh), label=false, show=true, size=(800, 600),
     tickfontsize=t_fs, legendfontsize=l_fs, dpi=100, color=default_colors[3], seriestype=:scatter, marker=:circle, markersize=2, markerstrokewidth=0)
 xlabel!(plt1, L"x", guidefontsize=g_fs)
-savefig(plt1, @sprintf("plots/Interpolation_s0.1_h0.0625.pdf"))
+savefig(plt1, "plots/Interpolation_s$(s)_h0.0625.pdf")
 readline()
 
 global plt2 = plot()
@@ -107,5 +102,5 @@ plot!(plt2, mesh[1:zoom_x], delta_4(mesh[1:zoom_x]) .^ s .* I_h_4.(mesh[1:zoom_x
 plot!(plt2, mesh[1:zoom_x], delta_2(mesh[1:zoom_x]) .^ s .* I_h_2.(mesh[1:zoom_x]), label=false, show=true, size=(800, 600),
     tickfontsize=t_fs, legendfontsize=l_fs, dpi=100, color=default_colors[3], seriestype=:scatter, marker=:circle, markersize=2, markerstrokewidth=0)
 xlabel!(plt2, L"x", guidefontsize=g_fs)
-savefig(plt2, @sprintf("plots/Interpolation_Zoom_s0.1_h0.0625.pdf"))
+savefig(plt2, "plots/Interpolation_Zoom_s$(s)_h0.0625.pdf")
 readline()
