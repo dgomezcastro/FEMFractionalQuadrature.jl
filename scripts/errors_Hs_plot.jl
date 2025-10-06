@@ -9,7 +9,7 @@ COLORS = ["orange", "royalblue1", "mediumorchid", "green4", "red2"]
 a = -1.
 b = 1.
 
-global ρ = 0.000244140625 / 4
+global ρ = 2^(-14)
 
 h_fine = 0.015625
 xx = collect(Float64, a:h_fine:b) #finer mesh
@@ -29,10 +29,10 @@ global k = 1
 for s in S
 
     if s == 0.6
-        global ρ = 0.000244140625 / 8
+        global ρ = 2^(-15)
     end
     if s == 0.7
-        global ρ = 0.000244140625 / 16
+        global ρ = 2^(-16)
     end
 
     directory_error = "save/convergence1d_distancep$(dist_p)_rho$(ρ)_s$(s).jld2"
