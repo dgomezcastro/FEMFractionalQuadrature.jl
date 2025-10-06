@@ -36,7 +36,7 @@ b = 1.
 logocolors = Colors.JULIA_LOGO_COLORS
 default_colors = palette(:auto)
 
-s = 0.1
+s = 0.6 #pick the value of s
 α = 2 * s
 cnst_sol = (pi^(1 / 2) * 2^(-α)) / (gamma(1 / 2 + s) * gamma(1 + s))
 
@@ -82,7 +82,6 @@ plot!(plt1, mesh, delta_2(mesh) .^ s .* I_h_2.(mesh), label=false, show=true, si
     tickfontsize=t_fs, legendfontsize=l_fs, dpi=100, color=default_colors[3], seriestype=:scatter, marker=:circle, markersize=2, markerstrokewidth=0)
 xlabel!(plt1, L"x", guidefontsize=g_fs)
 savefig(plt1, "plots/Interpolation_s$(s)_h0.0625.pdf")
-readline()
 
 global plt2 = plot()
 zoom_x = int(N / 10)
@@ -103,4 +102,3 @@ plot!(plt2, mesh[1:zoom_x], delta_2(mesh[1:zoom_x]) .^ s .* I_h_2.(mesh[1:zoom_x
     tickfontsize=t_fs, legendfontsize=l_fs, dpi=100, color=default_colors[3], seriestype=:scatter, marker=:circle, markersize=2, markerstrokewidth=0)
 xlabel!(plt2, L"x", guidefontsize=g_fs)
 savefig(plt2, "plots/Interpolation_Zoom_s$(s)_h0.0625.pdf")
-readline()
