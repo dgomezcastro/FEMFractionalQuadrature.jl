@@ -1,5 +1,4 @@
 using FEMFractionalQuadrature
-import .FEMFractionalQuadrature: WFEM1dBasis, Quadrature1dHsNorm, assemble, distance_quartic, dimension, L2norm, L2norm_Simpson, FractionalLaplaceIntervalSolution, WFEMIntervalBasis
 using LinearAlgebra, Plots, Printf, SpecialFunctions, LaTeXStrings, Interpolations, Printf, DelimitedFiles, FilePathsBase, Measures, JLD2
 
 function FEM_piece(xi::Float64, x::Float64, h::Float64)
@@ -19,7 +18,7 @@ COLORS = ["orange", "royalblue1", "mediumorchid", "green4", "red2"]
 a = -1.
 b = 1.
 
-global ρ = 2^(-14)
+global ρ = 2^(-14) #ρ value (global because it gets changed in local scope)
 
 h_fine = 0.015625
 xx = collect(Float64, a:h_fine:b) #finer mesh
@@ -27,8 +26,7 @@ NN = length(xx)
 
 dist_p = 4
 
-global plt1 = plot()
-global plt2 = plot()
+global plt = plot()
 g_fs = 30
 l_fs = 20
 t_fs = 20
@@ -77,26 +75,26 @@ for s in S
 
     if s == 0.1
         c = (ERR_L2)[1] / (H .^ (2))[1]
-        plot!(plt2, (H), H .^ (2) * c / 2, tickfontsize=t_fs, guidefontsize=g_fs, legendfontsize=l_fs,
+        plot!(plt, (H), H .^ (2) * c / 2, tickfontsize=t_fs, guidefontsize=g_fs, legendfontsize=l_fs,
             linestyle=:dash, label=L"c h^2", color="black",
             xscale=:log10, yscale=:log10)
     end
 
-    plot!(plt2, H, (ERR_L2), size=(1300, 1000), legendfontsize=l_fs,
+    plot!(plt, H, (ERR_L2), size=(1300, 1000), legendfontsize=l_fs,
         guidefontsize=g_fs, tickfontsize=t_fs, marker=:circle, markersize=8, markerstrokewidth=0, legend=:bottomright,
         label=L"s=" * "$(s)", margin=10mm,
         xscale=:log10, yscale=:log10, color=COLORS[k])
 
     exp = 2 - s + s * (4 - 2 * s) / (5)
     c = (ERR_L2)[1] / (H .^ (exp))[1]
-    plot!(plt2, (H), H .^ (exp) * c, tickfontsize=t_fs, guidefontsize=g_fs, legendfontsize=l_fs,
-        linestyle=:dash, label=L" ", color=COLORS[k],
+    plot!(plt, (H), H .^ (exp) * c, tickfontsize=t_fs, guidefontsize=g_fs, legendfontsize=l_fs,
+        linestyle=:dash, label=" ", color=COLORS[k],
         xscale=:log10, yscale=:log10)
-    xlabel!(plt2, L"h", guidefontsize=g_fs)
-    ylabel!(plt2, L"||u^{WFEM}-u^\ast||_{L^2(\Omega)}", guidefontsize=g_fs)
+    xlabel!(plt, L"h", guidefontsize=g_fs)
+    ylabel!(plt, L"||u^{WFEM}-u^\ast||_{L^2(\Omega)}", guidefontsize=g_fs)
 
     global k = k + 1
 
 end
 
-savefig(plt2, @sprintf("Figures_New/ConvWFEM_L2_compare.pdf"))
+savefig(plt, @sprintf("plots/ConvWFEM_L2_compare.pdf"))

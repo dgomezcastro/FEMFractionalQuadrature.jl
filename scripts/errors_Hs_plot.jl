@@ -1,5 +1,5 @@
 
-using LinearAlgebra, Plots, SpecialFunctions, LaTeXStrings, JLD2, Measures, Printf
+using LinearAlgebra, LaTeXStrings, Plots, SpecialFunctions, JLD2, Measures, Printf
 
 logocolors = Colors.JULIA_LOGO_COLORS
 H = [0.5, 0.250, 0.125, 0.0625]
@@ -9,7 +9,7 @@ COLORS = ["orange", "royalblue1", "mediumorchid", "green4", "red2"]
 a = -1.
 b = 1.
 
-global ρ = 2^(-14)
+global ρ = 2^(-14) #ρ value (global because it gets changed in local scope)
 
 h_fine = 0.015625
 xx = collect(Float64, a:h_fine:b) #finer mesh
@@ -58,7 +58,7 @@ for s in S
         xscale=:log10, yscale=:log10, color=COLORS[k])
     c = (ERR_HS)[1] / (H .^ (2-s))[1]
     plot!(plt, (H), H .^ (2 - s) * c, show=true, tickfontsize=t_fs, guidefontsize=g_fs, legendfontsize=l_fs,
-        linestyle=:dash, label=L"  ", color=COLORS[k], margin=10mm,
+        linestyle=:dash, label="  ", color=COLORS[k], margin=10mm,
         xscale=:log10, yscale=:log10)
     xlabel!(plt, L"h", guidefontsize=g_fs)
     ylabel!(plt, L"[u^{WFEM} - u^*]_{H^s(\mathbb{R}^d)}", guidefontsize=g_fs)
