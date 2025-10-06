@@ -80,3 +80,16 @@ function measure_1_distance_s(a, b, s, p)
         return measure_1_distance_s(a, 0., s, p) + measure_1_distance_s(0., b, s, p)
     end
 end
+
+"""
+Approximation of the L2 norm (∫_Ω f^2)^1/2 of a function f on an interval Ω=(a,b)
+"""
+function L2norm(a::Float64, b::Float64, f::Function, ; Δx::Number=10e-11, ΔΔx::Number=10e-12)
+    xs = a:Δx:b
+    return sqrt(Δx / 2 * sum((f(xs[i])^2 + f(xs[i+1])^2) for i in 1:length(xs)-1))
+end
+
+function L2norm_Simpson(a::Float64, b::Float64, f::Function, ; Δx::Number=10e-11, ΔΔx::Number=10e-12)
+    xs = a:Δx:b
+    return sqrt(Δx / 6 * sum((f(xs[i])^2 + 4 * f(((xs[i] + xs[i+1]) / 2))^2 + f(xs[i+1])^2) for i in 1:length(xs)-1))
+end
