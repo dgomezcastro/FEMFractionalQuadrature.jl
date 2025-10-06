@@ -26,7 +26,6 @@ function linear_interpolator(xs::Vector{<:Real}, ys::Vector{<:Real})
         x1, x2 = xs[i], xs[i+1]
         y1, y2 = ys[i], ys[i+1]
 
-        # Linear interpolation formula
         return y1 + (y2 - y1) * (x - x1) / (x2 - x1)
     end
 end
