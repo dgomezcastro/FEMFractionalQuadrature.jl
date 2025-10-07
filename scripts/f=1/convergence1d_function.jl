@@ -22,10 +22,10 @@ function convergence1d(s::Number, hs::Vector{Float64}, ρs::Vector{Float64})
     quad_fine = quad = Quadrature1dHsNorm(a, b, s, minimum(ρs[:]))
     for (j, h) in enumerate(hs)
         @show j / length(hs)
-        quad = Quadrature1dHsNorm(a, b, s, ρs[i, j])
+        quad = Quadrature1dHsNorm(a, b, s, ρs[j])
         basis = WFEMIntervalBasis(a, b, h, s,
             distance_power=dist_p,
-            integrator=(i, f) -> FEMFractionalQuadrature1d.integral_weighted_measure(basis, i, f)
+            integrator=(i, f) -> FEMFractionalQuadrature.integral_weighted_measure(basis, i, f)
         )
         prob = FractionalLaplaceInterval(a, b, s, f; basis=basis, quad=quad)
         uhs[j] = solve(prob)
