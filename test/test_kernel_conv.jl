@@ -1,3 +1,5 @@
+## TODO: THIS WILL BE TURNED INTO A TEST FOR 2D convolution
+
 using Test
 
 W(x, y) = 1 / (1 + x^2 + y^2)

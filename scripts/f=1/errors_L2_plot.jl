@@ -35,8 +35,6 @@ global k = 1
 for s in S
 
 
-    u(x) = max(1 - x^2, 0.0)^s * gamma(1 / 2) / (4^s * gamma((1 + 2 * s) / 2) * gamma(1 + s))
-
     if s == 0.6
         global ρ = 2^(-16)
     end
@@ -45,12 +43,7 @@ for s in S
         global ρ = 2^(-16)
     end
 
-    α = 2 * s
-    cnst = (2^α * (gamma(1 / 2 + s))) / (pi^(1 / 2) * abs(gamma(-s)))
-    cnst_sol = (pi^(1 / 2) * 2^(-α)) / (gamma(1 / 2 + s) * gamma(1 + s))
 
-    sol(x) = cnst_sol * (-x .^ 2 .+ 1) .^ s
-    cnst_sol_func(x) = cnst_sol
 
     ERR_L2 = zeros(length(H))
 

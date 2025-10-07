@@ -80,19 +80,3 @@ function measure_1_distance_s(a, b, s, p)
         return measure_1_distance_s(a, 0., s, p) + measure_1_distance_s(0., b, s, p)
     end
 end
-
-"""
-Approximation of ∫_Ω f φ_i with error less that h^2
-"""
-function integral_approx(basis::WFEMIntervalBasis, i, f::Function)
-    xi = basis.mesh[i]
-    σ = 10^(-6) #basis.h^(2 / basis.s)
-    if i == 1
-        xs = (xi):σ:(xi+basis.h)
-    elseif i == dimension(basis)
-        xs = (xi-basis.h):σ:(xi)
-    else
-        xs = (xi-basis.h):σ:(xi+basis.h)
-    end
-    return σ * sum(basis(i, x) * f(x) for x in xs)
-end
