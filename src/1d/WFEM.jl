@@ -7,10 +7,11 @@ struct WFEMIntervalBasis <: AbstractFEM1dBasis
     mesh::Vector{Float64}
     s::Float64
     distance_power::Float64
+    integrator::Function
 
-    function WFEMIntervalBasis(a::Number, b::Number, h::Number, s::Number, ; distance_power::Number=2)
+    function WFEMIntervalBasis(a::Number, b::Number, h::Number, s::Number, ; distance_power::Number=2, integrator=(i, f) -> integral_approx(basis, i, f, σ=10^(-6)))
         mesh = collect(Float64, a:h:b)
-        return new(h, mesh, s, distance_power)
+        return new(h, mesh, s, distance_power, integrator)
     end
 end
 
@@ -33,11 +34,28 @@ end
 
 dimension(basis::WFEMIntervalBasis) = length(basis.mesh)
 
+integral(basis::WFEMIntervalBasis, i, f::Function) = basis.integrator(i, f)
+
+"""
+Approximation of ∫_Ω f φ_i
+"""
+function integral_approx(basis::WFEMIntervalBasis, i, f::Function; σ=10^(-6))
+    xi = basis.mesh[i]
+    if i == 1
+        xs = (xi):σ:(xi+basis.h)
+    elseif i == dimension(basis)
+        xs = (xi-basis.h):σ:(xi)
+    else
+        xs = (xi-basis.h):σ:(xi+basis.h)
+    end
+    return σ * sum(basis(i, x) * f(x) for x in xs)
+end
+
 """
 Approximation of ∫_Ω f φ_i. 
 It is exact for f constant.
 """
-function integral(basis::WFEMIntervalBasis, i, f::Function)
+function integral_weighted_measure(basis, i, f)
     xi = basis.mesh[i]
     N = length(basis.mesh)
     mu_0_minus = measure_0_distance_s(basis.mesh[max(i - 1, 1)], basis.mesh[i], basis.s, basis.distance_power)

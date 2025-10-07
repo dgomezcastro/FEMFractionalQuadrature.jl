@@ -52,11 +52,11 @@ t_fs = 20
 global plt1 = plot(size=(800, 600),
     tickfontsize=t_fs, legendfontsize=l_fs, dpi=100, legend=legend_loc,)
 
+# TODO Clean up this plots
 plot!(plt1, xx, sol(xx), label=L"u^{\ast}", color=default_colors[2], linestyle=:dash, lw=3.5)
 plot!(plt1, mesh, sol(mesh), label=L"I_h u^{\ast}", color=default_colors[4], lw=2.0)
-plot!(plt1, xx, delta_4(xx) .^ s .* I_h_4.(xx), label=L"J_h u^{\ast} \delta(x) = 1 - |x|^4", size=(800, 600),
-    tickfontsize=t_fs, legendfontsize=l_fs, dpi=100, color=default_colors[1], legend=legend_loc, lw=2.0)
-plot!(plt1, xx, delta_2(xx) .^ s .* I_h_2.(xx), label=L"J_h u^{\ast} \delta(x) = 1 - |x|^2", size=(800, 600),
+plot!(plt1, xx, delta_4(xx) .^ s .* I_h_4.(xx), label=L"J_h u^{\ast}, \delta(x) = 1 - |x|^4", color=default_colors[1], lw=2.0)
+plot!(plt1, xx, delta_2(xx) .^ s .* I_h_2.(xx), label=L"J_h u^{\ast}, \delta(x) = 1 - |x|^2", size=(800, 600),
     tickfontsize=t_fs, legendfontsize=l_fs, dpi=100, color=default_colors[3], legend=legend_loc, lw=1.)
 plot!(plt1, mesh, sol(mesh), label=false, size=(800, 600),
     tickfontsize=t_fs, legendfontsize=l_fs, dpi=100, color=default_colors[4], seriestype=:scatter, marker=:circle, markersize=6, markerstrokewidth=0)
