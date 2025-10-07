@@ -10,7 +10,7 @@ b = 1.
 
 f(x) = 1.0
 # ss = 0.8:-0.2:0.2
-ss = [0.2]
+ss = [0.4]
 hs = 2. .^ -(0:4)
 errs = zeros(length(ss), length(hs))
 
@@ -29,12 +29,16 @@ for (i, s) in enumerate(ss)
 
     quad_fine = quad = Quadrature1dHsNorm(a, b, s, minimum(ρs[i, :]))
     for (j, h) in enumerate(hs)
+        filename_coefficients = "save/Coefficients_s$(s)/convergence1d_distancep$(dist_p)_rho$(ρ)_s$(s)_solution_coefficients_h$(h)"
         @show j / length(hs)
         quad = Quadrature1dHsNorm(a, b, s, ρs[i, j])
         basis = WFEMIntervalBasis(a, b, h, s, distance_power=dist_p)
         prob = FractionalLaplaceInterval(a, b, s, f; basis=basis, quad=quad)
         uh = solve(prob)
         errs[i, j] = Hsseminorm(quad_fine, x -> u(x) - uh(x))
+
+        d = Dict("U_coeff" => uh.coeffs, "s" => s, "h" => h, "ρ" => ρs[i, j])
+        save(filename_coefficients * ".jld2", d)
     end
 end
 
