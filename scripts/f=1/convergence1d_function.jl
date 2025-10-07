@@ -15,7 +15,7 @@ function convergence1d(s::Number, hs::Vector{Float64}, ρs::Vector{Float64})
     filename = "figs/f=1_distancep$(dist_p)"
 
     errsHs, errsL2 = zeros(size(ρs)), zeros(size(ρs))
-    uhs = Vector{Any}(undef, size(ρs))
+    uhs_coeffs = Vector{Any}(undef, size(ρs))
 
     u(x) = max(1 - x^2, 0.0)^s * gamma(1 / 2) / (4^s * gamma((1 + 2 * s) / 2) * gamma(1 + s))
 
@@ -28,12 +28,13 @@ function convergence1d(s::Number, hs::Vector{Float64}, ρs::Vector{Float64})
             integrator=(i, f) -> FEMFractionalQuadrature.integral_weighted_measure(basis, i, f)
         )
         prob = FractionalLaplaceInterval(a, b, s, f; basis=basis, quad=quad)
-        uhs[j] = solve(prob)
-        errsHs[j] = Hsseminorm(quad_fine, x -> u(x) - uhs[j](x))
-        errsL2[j] = L2norm1d(a, b, x -> u(x) - uhs[j](x), ρs[j])
+        uh = solve(prob)
+        uhs_coeffs[j] = uh.coeffs
+        errsHs[j] = Hsseminorm(quad_fine, x -> u(x) - uh(x))
+        errsL2[j] = L2norm1d(a, b, x -> u(x) - uh(x), ρs[j])
     end
 
     @debug "Saving data to file"
-    d = Dict("dist_label" => dist_label, "s" => s, "hs" => hs, "errsHs" => errsHs, "errsL2" => errsL2, "ρs" => ρs, "uhs" => uhs)
+    d = Dict("dist_label" => dist_label, "s" => s, "hs" => hs, "errsHs" => errsHs, "errsL2" => errsL2, "ρs" => ρs, "uh_coeff" => uhs_coeffs)
     save(filename * "_s_$s" * ".jld2", d)
 end
