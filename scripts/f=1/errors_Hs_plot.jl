@@ -21,11 +21,8 @@ global plt = plot(
     xscale=:log10,
     yscale=:log10)
 
-xlabel!(plt, L"h")
-ylabel!(plt, L"[u_h - u^\star]_{H^s(\mathbb{R})}")
-
 for (k, s) in enumerate(ss)
-    filename = "figs/convergence1d_distancep$(dist_p)_s$(s).jld2"
+    filename = "figs/f=1_distancep$(dist_p)_s$(s).jld2"
     dict = load(filename)
     hs = dict["hs"]
     # errsHs = dict["errsHs"]
@@ -42,4 +39,6 @@ for (k, s) in enumerate(ss)
     plot!(plt, hs_extended, c * hs_extended .^ (2 - s), label="", linestyle=:dash, color=COLORS[k])
 end
 
+xlabel!(plt, L"h")
+ylabel!(plt, L"[u_h - u^\star]_{H^s(\mathbb{R})}")
 savefig(plt, "figs/ConvWFEM_Hs_compare.pdf")

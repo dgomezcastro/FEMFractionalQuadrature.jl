@@ -12,7 +12,7 @@ function convergence1d(s::Number, hs::Vector{Float64}, ρs::Vector{Float64})
     dist_p = 4
     dist_label = latexstring("(1-|x|^$(dist_p))_+")
 
-    filename = "figs/convergence1d_distancep$(dist_p)"
+    filename = "figs/f=1_distancep$(dist_p)"
 
     errsHs, errsL2 = zeros(size(ρs)), zeros(size(ρs))
     uhs = Vector{Any}(undef, size(ρs))
@@ -22,8 +22,11 @@ function convergence1d(s::Number, hs::Vector{Float64}, ρs::Vector{Float64})
     quad_fine = quad = Quadrature1dHsNorm(a, b, s, minimum(ρs[:]))
     for (j, h) in enumerate(hs)
         @show j / length(hs)
-        quad = Quadrature1dHsNorm(a, b, s, ρs[j])
-        basis = WFEMIntervalBasis(a, b, h, s, distance_power=dist_p)
+        quad = Quadrature1dHsNorm(a, b, s, ρs[i, j])
+        basis = WFEMIntervalBasis(a, b, h, s,
+            distance_power=dist_p,
+            integrator=(i, f) -> FEMFractionalQuadrature1d.integral_weighted_measure(basis, i, f)
+        )
         prob = FractionalLaplaceInterval(a, b, s, f; basis=basis, quad=quad)
         uhs[j] = solve(prob)
         errsHs[j] = Hsseminorm(quad_fine, x -> u(x) - uhs[j](x))
