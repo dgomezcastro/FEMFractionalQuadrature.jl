@@ -82,14 +82,17 @@ function measure_1_distance_s(a, b, s, p)
 end
 
 """
-Approximation of the L2 norm (∫_Ω f^2)^1/2 of a function f on an interval Ω=(a,b)
+Approximation of ∫_Ω f φ_i with error less that h^2
 """
-function L2norm(a::Float64, b::Float64, f::Function, ; Δx::Number=10e-11, ΔΔx::Number=10e-12)
-    xs = a:Δx:b
-    return sqrt(Δx / 2 * sum((f(xs[i])^2 + f(xs[i+1])^2) for i in 1:length(xs)-1))
-end
-
-function L2norm_Simpson(a::Float64, b::Float64, f::Function, ; Δx::Number=10e-11, ΔΔx::Number=10e-12)
-    xs = a:Δx:b
-    return sqrt(Δx / 6 * sum((f(xs[i])^2 + 4 * f(((xs[i] + xs[i+1]) / 2))^2 + f(xs[i+1])^2) for i in 1:length(xs)-1))
+function integral_approx(basis::WFEMIntervalBasis, i, f::Function)
+    xi = basis.mesh[i]
+    σ = 10^(-6) #basis.h^(2 / basis.s)
+    if i == 1
+        xs = (xi):σ:(xi+basis.h)
+    elseif i == dimension(basis)
+        xs = (xi-basis.h):σ:(xi)
+    else
+        xs = (xi-basis.h):σ:(xi+basis.h)
+    end
+    return σ * sum(basis(i, x) * f(x) for x in xs)
 end
