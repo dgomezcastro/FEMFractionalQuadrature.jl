@@ -19,7 +19,7 @@ function convergence1d(s::Number, hs::Vector{Float64}, ρs::Vector{Float64})
     errsHs, errsL2 = zeros(size(ρs)), zeros(size(ρs))
     uhs_coeffs = Vector{Any}(undef, size(ρs))
 
-    u(x) = max(1 - x^2, 0.0)^s * gamma(1 / 2) / (4^s * gamma((1 + 2 * s) / 2) * gamma(1 + s))
+    u(x) = max(1 - x^2, 0.0)
 
     quad_fine = quad = Quadrature1dHsNorm(a, b, s, minimum(ρs[:]))
     for (j, h) in enumerate(hs)
