@@ -23,11 +23,11 @@ b = 1.
 logocolors = Colors.JULIA_LOGO_COLORS
 default_colors = palette(:auto)
 
-s = 0.1 #pick the value of s
+s = 0.4 #pick the value of s
 cnst_sol = (pi^(1 / 2) * 4^(-s)) / (gamma(1 / 2 + s) * gamma(1 + s))
 sol(x) = cnst_sol * (-x .^ 2 .+ 1) .^ s
 
-h = 2^-2
+h = 0.125
 mesh = collect(a:h:b)
 N = length(mesh)
 xx = collect(a:h/256:b)
@@ -44,45 +44,53 @@ solquotdelta_2(x) = cnst_sol
 I_h_4 = x -> linear_interpolator(x, mesh, solquotdelta_4.(mesh))
 I_h_2 = x -> linear_interpolator(x, mesh, solquotdelta_2.(mesh))
 
-legend_loc = :bottomright
-g_fs = 30
-l_fs = 15
-t_fs = 20
-
 global plt1 = plot(size=(800, 600),
-    tickfontsize=t_fs, legendfontsize=l_fs, dpi=100, legend=legend_loc,)
+    legend=:bottomright,
+    legendfontsize=15,
+    guidefontsize=30,
+    tickfontsize=20)
 
-# TODO Clean up this plots
 plot!(plt1, xx, sol(xx), label=L"u^{\ast}", color=default_colors[2], linestyle=:dash, lw=3.5)
 plot!(plt1, mesh, sol(mesh), label=L"I_h u^{\ast}", color=default_colors[4], lw=2.0)
 plot!(plt1, xx, delta_4(xx) .^ s .* I_h_4.(xx), label=L"J_h u^{\ast}, \delta(x) = 1 - |x|^4", color=default_colors[1], lw=2.0)
-plot!(plt1, xx, delta_2(xx) .^ s .* I_h_2.(xx), label=L"J_h u^{\ast}, \delta(x) = 1 - |x|^2", size=(800, 600),
-    tickfontsize=t_fs, legendfontsize=l_fs, dpi=100, color=default_colors[3], legend=legend_loc, lw=1.)
-plot!(plt1, mesh, sol(mesh), label=false, size=(800, 600),
-    tickfontsize=t_fs, legendfontsize=l_fs, dpi=100, color=default_colors[4], seriestype=:scatter, marker=:circle, markersize=6, markerstrokewidth=0)
-plot!(plt1, mesh, delta_4(mesh) .^ s .* I_h_4.(mesh), label=false, size=(800, 600),
-    tickfontsize=t_fs, legendfontsize=l_fs, dpi=100, color=default_colors[1], seriestype=:scatter, marker=:circle, markersize=4, markerstrokewidth=0)
-plot!(plt1, mesh, delta_2(mesh) .^ s .* I_h_2.(mesh), label=false, size=(800, 600),
-    tickfontsize=t_fs, legendfontsize=l_fs, dpi=100, color=default_colors[3], seriestype=:scatter, marker=:circle, markersize=2, markerstrokewidth=0)
-xlabel!(plt1, L"x", guidefontsize=g_fs)
+plot!(plt1, xx, delta_2(xx) .^ s .* I_h_2.(xx), label=L"J_h u^{\ast}, \delta(x) = 1 - |x|^2", color=default_colors[3], lw=1.)
+plot!(plt1, mesh, sol(mesh), label=false, color=default_colors[4], seriestype=:scatter, marker=:circle, markersize=6, markerstrokewidth=0)
+plot!(plt1, mesh, delta_4(mesh) .^ s .* I_h_4.(mesh), label=false, color=default_colors[1], seriestype=:scatter, marker=:circle, markersize=4, markerstrokewidth=0)
+plot!(plt1, mesh, delta_2(mesh) .^ s .* I_h_2.(mesh), label=false, color=default_colors[3], seriestype=:scatter, marker=:circle, markersize=2, markerstrokewidth=0)
+xlabel!(plt1, L"x")
 savefig(plt1, "figs/Interpolation_s$(s)_h$(h).pdf")
 
-global plt2 = plot()
-zoom_x = int(N / 10)
-zoom_xx = int(NN / 10)
-plot!(plt2, xx[1:zoom_xx], sol(xx)[1:zoom_xx], label=L"u^{\ast}", size=(800, 600), legend=legend_loc,
-    tickfontsize=t_fs, legendfontsize=l_fs, dpi=100, color=default_colors[2], linestyle=:dash, lw=2 * 3.5)
-plot!(plt2, mesh[1:zoom_x], sol(mesh)[1:zoom_x], label=L"I_h u^{\ast}", size=(800, 600), legend=legend_loc,
-    tickfontsize=t_fs, legendfontsize=l_fs, dpi=100, color=default_colors[4], lw=2 * 2.0)
-plot!(plt2, xx[1:zoom_xx], delta_4(xx[1:zoom_xx]) .^ s .* I_h_4.(xx[1:zoom_xx]), label=L"J_h u^{\ast} \delta(x) = 1 - |x|^4", size=(800, 600), legend=legend_loc,
-    tickfontsize=t_fs, legendfontsize=l_fs, dpi=100, color=default_colors[1], lw=2 * 2.0)
-plot!(plt2, xx[1:zoom_xx], delta_2(xx[1:zoom_xx]) .^ s .* I_h_2.(xx[1:zoom_xx]), label=L"J_h u^{\ast} \delta(x) = 1 - |x|^2", size=(800, 600), legend=legend_loc,
-    tickfontsize=t_fs, legendfontsize=l_fs, dpi=100, color=default_colors[3], lw=2 * 1.)
-plot!(plt2, mesh[1:zoom_x], sol(mesh)[1:zoom_x], label=false, size=(800, 600), legend=legend_loc,
-    tickfontsize=t_fs, legendfontsize=l_fs, dpi=100, color=default_colors[4], seriestype=:scatter, marker=:circle, markersize=6, markerstrokewidth=0)
-plot!(plt2, mesh[1:zoom_x], delta_4(mesh[1:zoom_x]) .^ s .* I_h_4.(mesh[1:zoom_x]), label=false, size=(800, 600),
-    tickfontsize=t_fs, legendfontsize=l_fs, dpi=100, color=default_colors[1], seriestype=:scatter, marker=:circle, markersize=4, markerstrokewidth=0)
-plot!(plt2, mesh[1:zoom_x], delta_2(mesh[1:zoom_x]) .^ s .* I_h_2.(mesh[1:zoom_x]), label=false, size=(800, 600),
-    tickfontsize=t_fs, legendfontsize=l_fs, dpi=100, color=default_colors[3], seriestype=:scatter, marker=:circle, markersize=2, markerstrokewidth=0)
-xlabel!(plt2, L"x", guidefontsize=g_fs)
+
+
+global plt2 = plot(
+    size=(800, 600),
+    legend=:bottomright,
+    legendfontsize=15,
+    guidefontsize=30,
+    tickfontsize=20)
+
+zoom_x = Int(round(N / 10))
+zoom_xx = Int(round(NN / 10))
+plot!(plt2, xx[1:zoom_xx], sol(xx)[1:zoom_xx], label=L"u^{\ast}", color=default_colors[2], linestyle=:dash, lw=2 * 3.5)
+plot!(plt2, mesh[1:zoom_x], sol(mesh)[1:zoom_x], label=L"I_h u^{\ast}", color=default_colors[4], lw=2 * 2.0)
+plot!(plt2, xx[1:zoom_xx], delta_4(xx[1:zoom_xx]) .^ s .* I_h_4.(xx[1:zoom_xx]), label=L"J_h u^{\ast}, \delta(x) = 1 - |x|^4", color=default_colors[1], lw=2 * 2.0)
+plot!(plt2, xx[1:zoom_xx], delta_2(xx[1:zoom_xx]) .^ s .* I_h_2.(xx[1:zoom_xx]), label=L"J_h u^{\ast}, \delta(x) = 1 - |x|^2", color=default_colors[3], lw=2 * 1.)
+plot!(plt2, mesh[1:zoom_x], sol(mesh)[1:zoom_x], label=false, color=default_colors[4], seriestype=:scatter, marker=:circle, markersize=6, markerstrokewidth=0)
+plot!(plt2, mesh[1:zoom_x], delta_4(mesh[1:zoom_x]) .^ s .* I_h_4.(mesh[1:zoom_x]), label=false, color=default_colors[1], seriestype=:scatter, marker=:circle, markersize=4, markerstrokewidth=0)
+plot!(plt2, mesh[1:zoom_x], delta_2(mesh[1:zoom_x]) .^ s .* I_h_2.(mesh[1:zoom_x]), label=false, color=default_colors[3], seriestype=:scatter, marker=:circle, markersize=2, markerstrokewidth=0)
+xlabel!(plt2, L"x")
 savefig(plt2, "figs/Interpolation_Zoom_s$(s)_h$(h).pdf")
+
+
+global plt3 = plot(size=(800, 600),
+    legend=:bottomright,
+    legendfontsize=15,
+    guidefontsize=30,
+    tickfontsize=20)
+
+plot!(plt3, xx, I_h_4.(xx), label=L"I_h (u^{\ast}/\delta^s), \delta(x) = 1 - |x|^4", color=default_colors[6], lw=2.0)
+plot!(plt3, xx, I_h_2.(xx), label=L"I_h (u^{\ast}/\delta^s), \delta(x) = 1 - |x|^2", color=default_colors[10], lw=2.)
+plot!(plt3, mesh, I_h_4.(mesh), label=false, color=default_colors[6], seriestype=:scatter, marker=:circle, markersize=2, markerstrokewidth=0)
+plot!(plt3, mesh, I_h_2.(mesh), label=false, color=default_colors[10], seriestype=:scatter, marker=:circle, markersize=2, markerstrokewidth=0)
+xlabel!(plt3, L"x")
+savefig(plt3, "figs/Ihuquotdelta_s$(s)_h$(h).pdf")
