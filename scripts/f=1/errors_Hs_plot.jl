@@ -25,7 +25,8 @@ for (k, s) in enumerate(ss)
     errsHs = dict["errsHs"]
 
     plot!(plt, hs, errsHs, label=latexstring("s=") * "$s", color=COLORS[k], marker=:circle, markersize=8, markerstrokewidth=0)
-    c = (errsHs)[1] / (hs .^ (2-s))[1]
+    cs = (errsHs) ./ (hs .^ (2 - s))
+    c = sum(cs) / length(cs)
     hs_extended = sort(hs)
     hs_extended = [0.9 * minimum(hs); hs_extended; 1.1 * maximum(hs)]
     plot!(plt, hs_extended, c * hs_extended .^ (2 - s), label="", linestyle=:dash, color=COLORS[k])
