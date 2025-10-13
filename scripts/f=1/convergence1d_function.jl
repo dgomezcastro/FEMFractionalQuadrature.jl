@@ -31,7 +31,7 @@ function convergence1d(s::Number, hs::Vector{Float64}, ρs::Vector{Float64})
         uh = solve(prob)
         uhs_coeffs[j] = uh.coeffs
         errsHs[j] = Hsseminorm(quad_fine, x -> u(x) - uh(x))
-        errsL2[j] = L2norm1d(a, b, x -> u(x) - uh(x), ρs[j])
+        errsL2[j] = L2norm1d(a, b, x -> u(x) - uh(x), minimum(ρs[:]) / 100)
     end
 
     @debug "Saving data to file"
