@@ -34,5 +34,5 @@ for (k, s) in enumerate(ss)
 end
 
 xlabel!(plt, L"h")
-ylabel!(plt, L"||u_h - u^\star||_{L^2(\Omega)}")
+ylabel!(plt, L"\Vert u_h - u^\star \Vert_{L^2(\Omega)}")
 savefig(plt, "figs/f=1_ConvWFEM_L2_compare.pdf")
