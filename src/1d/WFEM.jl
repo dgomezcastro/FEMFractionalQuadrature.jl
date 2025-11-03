@@ -7,11 +7,21 @@ struct WFEMIntervalBasis <: AbstractFEM1dBasis
     mesh::Vector{Float64}
     s::Float64
     distance_power::Float64
-    integrator::Function
+    integrator::Union{Nothing,Function}
 
-    function WFEMIntervalBasis(a::Number, b::Number, h::Number, s::Number, ; distance_power::Number=2, integrator=(i, f) -> integral_approx(basis, i, f, σ=10^(-6)))
+    function WFEMIntervalBasis(a::Number, b::Number, h::Number, s::Number;
+        distance_power::Number=2,
+        integrator=nothing
+    )
         mesh = collect(Float64, a:h:b)
         return new(h, mesh, s, distance_power, integrator)
+    end
+end
+function integral(basis::WFEMIntervalBasis, i::Integer, f::Function)
+    if basis.integrator == nothing
+        return integral_approx(basis, i, f, σ=10^(-6))
+    else
+        return basis.integrator(i, f)
     end
 end
 
@@ -23,7 +33,7 @@ end
 """
 Gives the i-th element of the basis at point `xx`
 """
-function (basis::WFEMIntervalBasis)(i::Int64, x::Float64)
+function (basis::WFEMIntervalBasis)(i::Integer, x::Float64)
     xi = basis.mesh[i]
     if abs(x .- xi) > basis.h
         return 0.0
@@ -34,7 +44,6 @@ end
 
 dimension(basis::WFEMIntervalBasis) = length(basis.mesh)
 
-integral(basis::WFEMIntervalBasis, i, f::Function) = basis.integrator(i, f)
 
 """
 Approximation of ∫_Ω f φ_i
