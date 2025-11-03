@@ -14,7 +14,7 @@ At this stage, the package deals with the one-dimensional problem $\Omega = (a,b
 
 ## Set up
 
-Clone this repo with julia 1.11.7 and set up dependencies by running
+Clone this repo with julia 1.12.1 and set up dependencies by running
 ```julia
 using Pkg;
 Pkg.activate(".");
