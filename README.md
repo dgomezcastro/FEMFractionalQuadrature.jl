@@ -4,7 +4,9 @@
 
 This code in this repository solves the fractional Dirichlet problem
 
-$\begin{cases} (-\Delta)^s u = f & \text{in } \Omega \\ u = 0 &\text{in } \mathbb R^d \setminus \Omega \end{cases}$
+```math
+\begin{cases} (-\Delta)^s u = f & \text{in } \Omega \\ u = 0 &\text{in } \mathbb R^d \setminus \Omega \end{cases}
+```
 
 using the FEM method with weighted basis functions. The approximation of the bilinear form is performed by quadrature of the singular integral on a uniform mesh of size $\rho$.
 
