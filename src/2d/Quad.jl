@@ -1,5 +1,3 @@
-include("kernel_conv.jl")
-import .Convolution2D: convolve, convolve_padded, KernelFFT2D
 using SpecialFunctions
 
 abstract type AbstractQuadrature2dHsNorm end

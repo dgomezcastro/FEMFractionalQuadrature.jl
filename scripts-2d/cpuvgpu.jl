@@ -35,7 +35,7 @@ for (i, ρ) in enumerate(ρs)
     global Kernel = FEMFractionalQuadrature.KernelFFT2D(W_Matrix, (length(X), length(Y)))
     CPUtimes[i] = (@btimed FEMFractionalQuadrature.convolve(Kernel, ξ)).time
 
-    global Kernel_CUDA = KernelFFT2D(W_Matrix, (length(X), length(Y)), use_cuda=true)
+    global Kernel_CUDA = FEMFractionalQuadrature.KernelFFT2D(W_Matrix, (length(X), length(Y)), use_cuda=true)
     GPUtimes[i] = (@btimed FEMFractionalQuadrature.convolve(Kernel_CUDA, ξ)).time
 end
 
@@ -43,4 +43,4 @@ end
 p = plot(xaxis=:log10, yaxis=:log10, xlabel="ρ", ylabel="Time (s)", title="Time elapsed by one convolution vs ρ in 2D", legend=:topright)
 plot!(p, ρs, CPUtimes, label="CPU")
 plot!(p, ρs, GPUtimes, label="GPU")
-savefig(p, "cost.pdf")
+savefig(p, "figs/cpuvgpu.pdf")

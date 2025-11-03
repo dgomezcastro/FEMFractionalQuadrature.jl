@@ -9,7 +9,7 @@ end
 function KernelFFT2D(kernel::AbstractMatrix, data_size::Tuple{Int,Int}; use_cuda=false)
     if CUDA.functional() == false && use_cuda
         use_cuda = false
-        @warning "CUDA is not functional on this machine, so it has been disabled"
+        @warn "CUDA is not functional on this machine, so it has been disabled"
     end
 
     outsize = size(kernel) .+ data_size .- 1

@@ -4,6 +4,8 @@ version = "1.0.0"
 authors = ["David Gomez-Castro <david@gomezcastro.xyz>", "Stefano Fronzoni <fronzoni@maths.ox.ac.uk>"]
 
 [deps]
+BenchmarkTools = "6e4b80f9-dd63-53aa-95a3-0cdb28fa8baf"
+CUDA = "052768ef-5323-5732-b1bb-66c8b64840ba"
 FFTW = "7a1cc6ca-52ef-59f5-83cd-3a7055c09341"
 HypergeometricFunctions = "34004b35-14d8-5ef3-9330-4cdb6864b03a"
 JLD2 = "033835bb-8acc-5ee8-8aae-3f567f8a3819"
@@ -19,6 +21,8 @@ ToeplitzMatrices = "c751599d-da0a-543b-9d20-d0a503d91d24"
 Triangulate = "f7e6ffb2-c36d-4f8f-a77e-16e897189344"
 
 [compat]
+BenchmarkTools = "1.6.3"
+CUDA = "5.9.2"
 FFTW = "1.10.0"
 HypergeometricFunctions = "0.3.28"
 JLD2 = "0.6.2"
