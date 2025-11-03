@@ -1,32 +1,45 @@
-
-module Convolution2D
-
-using FFTW
+using CUDA, FFTW
 
 struct KernelFFT2D
-    kernel_ftt::Array{ComplexF64,2}
+    kernel_ftt::Union{Array{ComplexF64,2},CuArray{ComplexF64,2}}
     data_size::Tuple{Int,Int}
+    use_cuda::Bool
 end
 
-function KernelFFT2D(kernel::AbstractMatrix, data_size::Tuple{Int,Int})
+function KernelFFT2D(kernel::AbstractMatrix, data_size::Tuple{Int,Int}; use_cuda=false)
+    if CUDA.functional() == false && use_cuda
+        use_cuda = false
+        @warning "CUDA is not functional on this machine, so it has been disabled"
+    end
+
     outsize = size(kernel) .+ data_size .- 1
     kernel_pad = zeros(outsize)
     kernel_pad[1:size(kernel, 1), 1:size(kernel, 2)] .= kernel
-    kernel_ftt = fft(kernel_pad)
-    return KernelFFT2D(kernel_ftt, data_size)
+    if use_cuda
+        kernel_pad_cu = CuArray(kernel_pad)
+        kernel_ftt = fft(kernel_pad_cu)
+    else
+        kernel_ftt = fft(kernel_pad)
+    end
+    return KernelFFT2D(kernel_ftt, data_size, use_cuda)
 end
 
-function convolve_padded(k, data::AbstractMatrix)
+function convolve_padded(k::KernelFFT2D, data::AbstractMatrix)
     outsize = size(k.kernel_ftt)
     data_pad = zeros(outsize)
     data_pad[1:size(data, 1), 1:size(data, 2)] .= data
-    Fdata = fft(data_pad)
+    if k.use_cuda
+        data_pad_cu = CuArray(data_pad)
+        Fdata = fft(data_pad_cu)
+    else
+        Fdata = fft(data_pad)
+    end
     FC = k.kernel_ftt .* Fdata
     C = real.(ifft(FC))
     return C
 end
 
-function convolve(k, data::AbstractMatrix)
+function convolve(k::KernelFFT2D, data::AbstractMatrix)
     C = convolve_padded(k, data)
 
     N1, N2 = div.(size(C), 2)
@@ -43,6 +56,4 @@ function convolve(k, data::AbstractMatrix)
     end
 
     return C[range1, range2]
-end
-
 end
