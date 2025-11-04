@@ -8,9 +8,13 @@ This code in this repository solves the fractional Dirichlet problem
 \begin{cases} (-\Delta)^s u = f & \text{in } \Omega \\ u = 0 &\text{in } \mathbb R^d \setminus \Omega \end{cases}
 ```
 
-using the FEM method with weighted basis functions. The approximation of the bilinear form is performed by quadrature of the singular integral on a uniform mesh of size $\rho$.
+using the FEM method with weighted basis functions, as presented in 
 
-At this stage, the package deals with the one-dimensional problem $\Omega = (a,b)$. 
+* F. del Teso, S. Fronzoni, D. Gómez-Castro. _Finite Elements with weighted bases for the fractional Laplacian_. [https://arxiv.org/abs/2511.01727](https://arxiv.org/abs/2511.01727)
+
+The approximation of the bilinear form is performed by quadrature of the singular integral on a uniform mesh of size $\rho$.
+
+At this stage, the package deals with the one-dimensional problem $\Omega = (a,b)$.  
 
 ## Set up
 
