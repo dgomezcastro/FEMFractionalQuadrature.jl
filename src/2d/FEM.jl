@@ -1,79 +1,15 @@
-using Triangulate, Printf
+using Printf
 
-export PLFEMBasisDirichlet
+export PLFEMBasis2dDirichlet
 
-struct PLFEMBasisDirichlet <: AbstractFEM2dBasis
+struct PLFEMBasis2dDirichlet <: AbstractFEM2dBasis
     h::Float64
+    # TODO: We should just be storing the mesh with the dependency to TriangulateIO
     Nodes::Matrix{Float64}
     nNode::Int
     Elem::Matrix{Int32}
     nElem::Int
     boundary_flags::Vector{Bool}
-
-    function PLFEMBasis(h::Float64)
-        mesh = generate_mesh_UnitCircle(h)
-        Nodes = mesh.pointlist
-        ndim, nNode = size(Nodes)
-        Elem = mesh.trianglelist
-        ndim, nElem = size(Elem)
-
-        boundary_flags = Bool[]
-
-        for n in 1:nNode
-            push!(boundary_flags, abs((Nodes[1, n]^2 + Nodes[2, n]^2) - 1.0) < 1e-10)
-        end
-
-        return new(h, Nodes, nNode, Elem, nElem, boundary_flags)
-    end
-
-
-end
-
-
-function generate_mesh_UnitSquare(h::Float64)
-
-    hh = h^2 / 2 #area of each triangle
-
-    triin = Triangulate.TriangulateIO()
-    triin.pointlist = Matrix{Cdouble}([0.0 0.0; 1.0 0.0; 1.0 0.5; 0.0 0.5; 0.0 1.0; 1.0 1.0]')
-    triin.segmentlist = Matrix{Cint}([1 2; 2 3; 3 4; 4 5; 5 6; 6 3; 4 1]')
-    triin.segmentmarkerlist = Vector{Int32}([1, 2, 3, 4, 5, 6, 7])
-
-    maxarea = hh
-    area = @sprintf("%.15f", maxarea)
-
-    (triout, vorout) = triangulate("pa$(area)DQ", triin)
-    return triout
-
-end
-
-
-function generate_mesh_UnitCircle(h::Float64)
-
-    hh = h^2 / 2 #area triangle
-
-    # Initialize Triangulate input
-    triin = Triangulate.TriangulateIO()
-
-    # Discretize the circle boundary
-    nboundary = round(Int, 2 * 2π / h + 1)
-    θ = range(0, 2π, length=nboundary + 1)[1:end-1]  # avoid duplicate at 2π
-    boundary_pts = hcat(cos.(θ), sin.(θ))'
-
-    segments = [i % nboundary + 1 for i in 1:nboundary]   # connect boundary points
-    triin.segmentlist = Matrix{Cint}(hcat(1:nboundary, segments)')
-    triin.segmentmarkerlist = collect(Int32.(ones(nboundary))) # all marker=1
-
-    allpoints = boundary_pts
-    triin.pointlist = Matrix{Cdouble}(allpoints)
-
-    triin.regionlist = Matrix{Cdouble}([0.0 0.0 1.0 hh]')
-
-    # Triangulate
-    area = @sprintf("%.15f", hh)
-    triout, vorout = triangulate("pqa$(area)DQ", triin)
-
-    return triout
 end
 
 @inline function sign_area(p1, p2, p3)
@@ -166,7 +102,7 @@ end
 """
 function evaluating the ϕ_i basis function at the point P=[P[1], P[2]] inside or outside the element K
 """
-function ϕ(basis::PLFEMBasisDirichlet, i, P::Vector{Float64})
+function ϕ(basis::PLFEMBasis2dDirichlet, i, P::Vector{Float64})
     neighbouring_elements = (1:basis.nElem)[FEM2d_FindElem(i, basis)]
     for index_Elem in neighbouring_elements
         select = basis.Elem[:, index_Elem]
@@ -185,9 +121,9 @@ function ϕ(basis::PLFEMBasisDirichlet, i, P::Vector{Float64})
 end
 
 
-dimension(basis::PLFEMBasisDirichlet) = basis.nNode - sum(basis.boundary_flags)
+dimension(basis::PLFEMBasis2dDirichlet) = basis.nNode - sum(basis.boundary_flags)
 
-function integral(basis::PLFEMBasisDirichlet, i, f::Function)
+function integral(basis::PLFEMBasis2dDirichlet, i, f::Function)
     points = basis.Nodes
     triangles = basis.Elem
 

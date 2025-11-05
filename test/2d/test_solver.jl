@@ -8,13 +8,13 @@ import FEMFractionalQuadrature
     a = -1.
     b = 1.
 
-    basis = WFEMBasisDirichlet(h, s)
+    basis = FEMFractionalQuadrature.WFEMBasis2dDirichletUnitCircle(h, s)
     quad = Quadrature2dHsNorm(2., s, ρ)
 
     f(x) = 1.0
     A, bf = assemble(basis, quad, f)
     U = A \ bf
-    U_sol = [distance(basis, basis.Nodes[:, i]) .^ s for i in 1:basis.nNode] .* U
+    U_sol = [distance(basis, basis.Nodes[:, i]) .^ s for i in 1:size(basis.Nodes, 2)] .* U
     display(U_sol)
 
     xx = basis.Nodes[1, :]
