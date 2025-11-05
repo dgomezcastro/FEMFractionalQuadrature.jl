@@ -37,7 +37,7 @@ struct Quadrature2dHsNorm <: AbstractQuadrature2dHsNorm
         xR = -R+ρ/2:ρ:R-ρ/2
         yR = xR
 
-        C_W = sum(W_func(x - ρ / 2, y - ρ / 2) * ρ^2 for x in xR for y in yR) ##
+        C_W = sum(W_func(x - ρ / 2, y - ρ / 2) * ρ^2 for x in xR for y in yR) # TODO: Replace by epsteinzeta from EpsteinLib.jl
 
         α = 2 * s
         Cds = (2^α * (gamma(1 + s))) / (pi * abs(gamma(-s)))
