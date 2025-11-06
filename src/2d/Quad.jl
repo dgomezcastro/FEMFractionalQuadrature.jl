@@ -36,7 +36,7 @@ struct Quadrature2dHsNorm <: AbstractQuadrature2dHsNorm
         C_W = real(EpsteinLib.epsteinzeta(2 + 2 * s; d=2))
 
         α = 2 * s
-        Cds = (2^α * (gamma(1 + s))) / (pi * abs(gamma(-s)))
+        Cds = (2^α * (gamma(1 + s))) / (pi * abs(gamma(-s))) ## TODO: REVISE CONSTANT FOR d
 
         return new(domain_quad, nQuad, ρ, C_W, Kernel, s, Cds)
     end
