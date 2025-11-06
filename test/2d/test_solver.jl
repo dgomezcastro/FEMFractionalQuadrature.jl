@@ -15,7 +15,7 @@ using LinearAlgebra
     A, bf = FEMFractionalQuadrature.assemble(basis, quad, f)
     coeff = A \ bf
 
-    U(x) = dot(coeff, [basis(i, x) for i in 1:dim(basis)])
+    U(x) = dot(coeff, [basis(i, x) for i in 1:FEMFractionalQuadrature.dimension(basis)])
 
     U([0.0, 0.0])
 
