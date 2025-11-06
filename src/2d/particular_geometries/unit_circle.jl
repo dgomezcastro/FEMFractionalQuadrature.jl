@@ -1,10 +1,4 @@
-function distance(basis::WFEMBasis2dDirichlet, P::Vector{Float64})
-    return max(1 - (sqrt(P[1]^2 + P[2]^2))^basis.distance_power, 0.0)
-end
-
-## TODO: This does not seem right
 function generate_mesh_UnitCircle(h::Float64)
-
     hh = h^2 / 2 #area triangle
 
     # Initialize Triangulate input
@@ -31,24 +25,11 @@ function generate_mesh_UnitCircle(h::Float64)
     return triout
 end
 
-## TODO: This makes no sense
 function PLFEMBasis2dDirichletUnitCircle(h::Float64)
     mesh = generate_mesh_UnitCircle(h)
-    Nodes = mesh.pointlist
-    ndim, nNode = size(Nodes)
-    Elem = mesh.trianglelist
-    ndim, nElem = size(Elem)
-
-    boundary_flags = Bool[]
-
-    for n in 1:nNode
-        push!(boundary_flags, abs((Nodes[1, n]^2 + Nodes[2, n]^2) - 1.0) < 1e-10)
-    end
-
-    return new(h, Nodes, nNode, Elem, nElem, boundary_flags)
+    return PLFEMBasis2dDirichlet(mesh)
 end
 
-## TODO: We should make reference to overtriangulation
 function WFEM2d_generate_mesh_UnitCircle(h::Float64)
 
     hh = h^2 / 2 #area triangle
@@ -79,18 +60,7 @@ function WFEM2d_generate_mesh_UnitCircle(h::Float64)
     return triout
 end
 
-function WFEMBasis2dDirichletUnitCircle(h::Float64, s::Float64; distance_power::Int=4)
-    mesh = WFEM2d_generate_mesh_UnitCircle(h)
-    Nodes = mesh.pointlist
-    ndim, nNode = size(Nodes)
-    Elem = mesh.trianglelist
-    ndim, nElem = size(Elem)
-
-    boundary_flags = Bool[]
-
-    for n in 1:nNode
-        push!(boundary_flags, ((Nodes[1, n]^2 + Nodes[2, n]^2) - 1.0) > 0.0)
-    end
-
-    return new(h, s, Nodes, nNode, Elem, nElem, boundary_flags, distance_power)
+function WFEMBasis2dDirichletUnitCircle(h::Float64, s::Float64; δ::Function=P -> max(1 - norm(P)^4, 0.0))
+    mesh = generate_mesh_UnitCircle(h)
+    return WFEMBasis2dDirichlet(s, mesh, δ)
 end

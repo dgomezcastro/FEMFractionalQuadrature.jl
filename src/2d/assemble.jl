@@ -10,7 +10,7 @@ function evaluation(basis::AbstractFEM2dBasis, quad::Quadrature2dHsNorm)
 
     ξ = zeros(basisdim, quad.nQuad)
     @threads for i in range(1, basisdim)
-        ξ[i, :] = [ϕ(basis, i, quad.domain_quad[:, k]) for k in 1:quad.nQuad]
+        ξ[i, :] = [basis(i, quad.domain_quad[:, k]) for k in 1:quad.nQuad]
     end
 
     return sparse(ξ)
@@ -30,7 +30,7 @@ function assemble(basis::AbstractFEM2dBasis, quad::Quadrature2dHsNorm, f::Functi
         for j in range(i, basisdim)
             I1 = (quad.ρ^2 * quad.C_W * ξ[j, :])'ξ[i, :]
             I2 = φ_convolved'ξ[j, :] * quad.ρ^2
-            A[i, j] = 2 * (I1  - I2) 
+            A[i, j] = 2 * (I1 - I2)
         end
     end
 

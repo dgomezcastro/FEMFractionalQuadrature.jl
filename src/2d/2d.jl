@@ -2,6 +2,8 @@ abstract type AbstractFEM2dBasis end
 
 using Triangulate
 
+include("FEMNeumann.jl")
+include("FEMDirichlet.jl")
 include("WFEM.jl")
 include("kernel_conv.jl")
 include("Quad.jl")

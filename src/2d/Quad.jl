@@ -33,11 +33,7 @@ struct Quadrature2dHsNorm <: AbstractQuadrature2dHsNorm
 
         Kernel = KernelFFT2D(W_FFT_Matrix, (length(X), length(Y)))
 
-        R = L * 10
-        xR = -R+ρ/2:ρ:R-ρ/2
-        yR = xR
-
-        C_W = sum(W_func(x - ρ / 2, y - ρ / 2) * ρ^2 for x in xR for y in yR) # TODO: Replace by epsteinzeta from EpsteinLib.jl
+        C_W = real(EpsteinLib.epsteinzeta(2 + 2 * s; d=2))
 
         α = 2 * s
         Cds = (2^α * (gamma(1 + s))) / (pi * abs(gamma(-s)))

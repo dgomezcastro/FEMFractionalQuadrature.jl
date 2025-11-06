@@ -6,6 +6,7 @@ authors = ["David Gomez-Castro <david@gomezcastro.xyz>", "Stefano Fronzoni <fron
 [deps]
 BenchmarkTools = "6e4b80f9-dd63-53aa-95a3-0cdb28fa8baf"
 CUDA = "052768ef-5323-5732-b1bb-66c8b64840ba"
+Epsteinlib_jll = "4ec54591-1743-56ec-8704-f258a6d96b61"
 ExtendableFEM = "a722555e-65e0-4074-a036-ca7ce79a4aed"
 ExtendableFEMBase = "12fb9182-3d4c-4424-8fd1-727a0899810c"
 ExtendableGrids = "cfc395e8-590f-11e8-1f13-43a2532b2fa8"
@@ -28,6 +29,7 @@ Triangulate = "f7e6ffb2-c36d-4f8f-a77e-16e897189344"
 WGLMakie = "276b4fcb-3e11-5398-bf8b-a0c2d153d008"
 
 [compat]
+Epsteinlib_jll = "0.5.0"
 ExtendableFEM = "1.5.0"
 ExtendableFEMBase = "1.4.0"
 ExtendableGrids = "1.14.0"

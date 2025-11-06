@@ -1,20 +1,23 @@
 using Printf
 
-export PLFEMBasis2dDirichlet
+using Triangulate, LinearAlgebra
 
-struct PLFEMBasis2dDirichlet <: AbstractFEM2dBasis
-    h::Float64
-    # TODO: We should just be storing the mesh with the dependency to TriangulateIO
-    Nodes::Matrix{Float64}
-    nNode::Int
-    Elem::Matrix{Int32}
-    nElem::Int
-    boundary_flags::Vector{Bool}
+struct PLFEMBasis2dNeumann <: AbstractFEM2dBasis
+    mesh::Triangulate.TriangulateIO
+    neighbourtriangleofpoint::Vector{Vector{Int64}}
+
+    function PLFEMBasis2dNeumann(mesh)
+        neighbourtriangleofpoint = Vector{Vector{Float64}}(undef, numberofpoints(mesh))
+        allindexes::Vector{Int64} = 1:numberoftriangles(mesh)
+        for i in eachindex(neighbourtriangleofpoint)
+            isintriangles = [i in mesh.trianglelist[:, k] for k in 1:numberoftriangles(mesh)]
+            neighbourtriangleofpoint[i] = allindexes[isintriangles]
+        end
+        return new(mesh, neighbourtriangleofpoint)
+    end
 end
 
-@inline function sign_area(p1, p2, p3)
-    return (p1[1] - p3[1]) * (p2[2] - p3[2]) - (p2[1] - p3[1]) * (p1[2] - p3[2])
-end
+dimension(basis::PLFEMBasis2dNeumann) = numberofpoints(basis.mesh)
 
 """
 function determining if a point P is inside the triangle defined by the vertices A, B, C
@@ -35,13 +38,11 @@ function creating the matrix BK and the vector bk, defining the affine map
 going from the refernce element to the element K with vertices ahaving coordinate coord
 """
 function FEM2d_AffineMap_RefElem(coord::Matrix{Float64})
-
     BK = [0 0; 0 0]
     BK[:, 1] = coord[:, 2] - coord[:, 1]
     BK[:, 2] = coord[:, 3] - coord[:. 1]
 
     return coord[:, 1], BK
-
 end
 
 """
@@ -49,39 +50,13 @@ function creating the matrix BK^(-1) and the vector bk, defining the inverse aff
 going from the element K with vertices ahaving coordinate coord to the refernce element 
 """
 function FEM2d_InvAffineMap_RefElem(coord::Matrix{Float64})
-
     invBK = [0.0 0.0; 0.0 0.0]
     invBK[1, 1] = coord[2, 3] - coord[2, 1]
     invBK[1, 2] = -(coord[1, 3] - coord[1, 1])
     invBK[2, 1] = -(coord[2, 2] - coord[2, 1])
     invBK[2, 2] = coord[1, 2] - coord[1, 1]
 
-    det = ((coord[1, 2] - coord[1, 1]) * (coord[2, 3] - coord[2, 1]) - (coord[1, 3] - coord[1, 1]) * (coord[2, 2] - coord[2, 1]))
-
-    return coord[:, 1], invBK * 1 / det
-
-end
-
-
-"""
-function finding the elements containing the node of index i,
-the function return a vector of Booolean with legth the number of elements (nelem)
-"""
-function FEM2d_FindElem(i::Int, basis::AbstractFEM2dBasis)
-
-    return [i in basis.Elem[:, k] for k in 1:basis.nElem]
-
-end
-
-"""
-function finding the neighbouring elements containing the node of index i
-"""
-function FEM2d_NeighbElem(basis::AbstractFEM2dBasis)
-    Neighb = Dict(0 => [0])
-    for i in 1:nNode
-        Neighb[i] = (1:basis.nElem)[FEM2d_FindElem(i, basis)]
-    end
-    return Neighb
+    return coord[:, 1], invBK / det(invBK)
 end
 
 """
@@ -102,11 +77,10 @@ end
 """
 function evaluating the ϕ_i basis function at the point P=[P[1], P[2]] inside or outside the element K
 """
-function ϕ(basis::PLFEMBasis2dDirichlet, i, P::Vector{Float64})
-    neighbouring_elements = (1:basis.nElem)[FEM2d_FindElem(i, basis)]
-    for index_Elem in neighbouring_elements
-        select = basis.Elem[:, index_Elem]
-        coord = basis.Nodes[:, select]
+function (basis::PLFEMBasis2dNeumann)(i::Int64, P::Vector{Float64})::Float64
+    for index_Elem in basis.neighbourtriangleofpoint[i]
+        select = basis.mesh.trianglelist[:, index_Elem]
+        coord = basis.mesh.pointlist[:, select]
         if point_in_triangle(P, coord[:, 1], coord[:, 2], coord[:, 3])
             for jj in 1:3
                 if i == select[jj]
@@ -116,28 +90,24 @@ function ϕ(basis::PLFEMBasis2dDirichlet, i, P::Vector{Float64})
             end
         end
     end
+    # If no previous return has happened, P is outside the triangulation
     return 0.0
 
 end
 
-
-dimension(basis::PLFEMBasis2dDirichlet) = basis.nNode - sum(basis.boundary_flags)
-
-function integral(basis::PLFEMBasis2dDirichlet, i, f::Function)
-    points = basis.Nodes
-    triangles = basis.Elem
-
-    n_triangles = size(triangles, 2)
+function integral(basis::PLFEMBasis2dNeumann, i, f::Function)
+    points = basis.mesh.pointlist
+    triangles = basis.mesh.trianglelist
 
     integral = 0.0
-    for k in 1:n_triangles
+    for k in 1:numberoftriangles(basis.mesh)
 
         v = triangles[:, k]
         p1 = points[:, v[1]]
         p2 = points[:, v[2]]
         p3 = points[:, v[3]]
 
-        f_barycenter = 1 / 3 * (ϕ(basis, i, p1) * f(p1) + ϕ(basis, i, p2) * f(p2) + ϕ(basis, i, p3) * f(p3))
+        f_barycenter = 1 / 3 * (basis(i, p1) * f(p1) + basis(i, p2) * f(p2) + basis(i, p3) * f(p3))
 
         area = 0.5 * abs((p2[1] - p1[1]) * (p3[2] - p1[2]) - (p3[1] - p1[1]) * (p2[2] - p1[2]))
 

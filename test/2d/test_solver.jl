@@ -1,5 +1,5 @@
 import FEMFractionalQuadrature
-
+using LinearAlgebra
 @testset "Test solver d=2 does not crash" begin
 
     s = 0.7
@@ -9,15 +9,15 @@ import FEMFractionalQuadrature
     b = 1.
 
     basis = FEMFractionalQuadrature.WFEMBasis2dDirichletUnitCircle(h, s)
-    quad = Quadrature2dHsNorm(2., s, ρ)
+    quad = FEMFractionalQuadrature.Quadrature2dHsNorm(2., s, ρ)
 
     f(x) = 1.0
-    A, bf = assemble(basis, quad, f)
-    U = A \ bf
-    U_sol = [distance(basis, basis.Nodes[:, i]) .^ s for i in 1:size(basis.Nodes, 2)] .* U
-    display(U_sol)
+    A, bf = FEMFractionalQuadrature.assemble(basis, quad, f)
+    coeff = A \ bf
 
-    xx = basis.Nodes[1, :]
-    yy = basis.Nodes[2, :]
+    U(x) = dot(coeff, [basis(i, x) for i in 1:dim(basis)])
 
+    U([0.0, 0.0])
+
+    # TODO: Test values are correct
 end
