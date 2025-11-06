@@ -16,6 +16,8 @@ end
 
 dimension(basis::WFEMBasis2dDirichlet) = dimension(basis.basisNeumann)
 
+mesh(basis::WFEMBasis2dDirichlet) = basis.basisNeumann.mesh
+
 """
 function evaluating the ϕ_i basis function at the point P inside or outside the element K
 """

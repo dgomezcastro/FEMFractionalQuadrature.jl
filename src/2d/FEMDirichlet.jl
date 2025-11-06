@@ -29,6 +29,9 @@ struct PLFEMBasis2dDirichlet <: AbstractFEM2dBasis
 end
 dimension(basis::PLFEMBasis2dDirichlet) = length(basis.interior_point)
 (basis::PLFEMBasis2dDirichlet)(i, x) = basis.basisNeumann(interior_point[i], x)
+
+mesh(basis::PLFEMBasis2dDirichlet) = basis.basisNeumann.mesh
+
 integral(basis::PLFEMBasis2dDirichlet, i, f::Function) = integral(basis::PLFEMBasis2dNeumann, basis.interior_point[i], f::Function)
 
 @inline function sign_area(p1, p2, p3)

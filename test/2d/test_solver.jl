@@ -6,21 +6,20 @@ using LinearAlgebra
     h = 2.0^-3
     ρ = 2.0^-6
 
-    basis = FEMFractionalQuadrature.WFEMBasis2dDirichletUnitCircle(h, s)
+    basis = FEMFractionalQuadrature.WFEMBasis2dDirichletUnitCircle(h, s;
+        δ=P -> max(1 - norm(P)^2, 0.0))
     quad = FEMFractionalQuadrature.Quadrature2dHsNorm(2., s, ρ)
-
-    f(x) = 1.0
-    A, bf = FEMFractionalQuadrature.assemble(basis, quad, f)
-    coeff = A \ bf
 
     d = 2
     u(x) = max(1 - norm(x)^2, 0.0)^s * gamma(d / 2) / (4^s * gamma((d + 2 * s) / 2) * gamma(1 + s))
 
-    uh(x) = dot(coeff, [basis(i, x) for i in 1:FEMFractionalQuadrature.dimension(basis)])
+    f(x) = 1.0
+    uh = solve(f, basis, quad)
 
-    e(x) = abs(u(x) - uh(x))
+    us = [u(quad.domain_quad[:, k]) for k in 1:quad.nQuad]
+    uhs = [uh(quad.domain_quad[:, k]) for k in 1:quad.nQuad]
 
-    @show maximum([e(quad.domain_quad[:, k]) for k in 1:quad.nQuad]) # HUGE ERROR
+    @test maximum(abs.(us - uhs)) / maximum(us) < 1e-1
 
-    # TODO: Test values are correct
+    @test minimum(uhs .>= 0.0)
 end

@@ -1,4 +1,4 @@
-abstract type AbstractFEM2dBasis end
+abstract type AbstractFEM2dBasis <: AbstractFEMBasis end
 
 using Triangulate
 

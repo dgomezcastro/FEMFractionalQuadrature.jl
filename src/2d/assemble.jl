@@ -1,7 +1,5 @@
 using SparseArrays, Plots, SpecialFunctions
 
-export assemble
-
 function evaluation(basis::AbstractFEM2dBasis, quad::Quadrature2dHsNorm)
     basisdim = dimension(basis)
 

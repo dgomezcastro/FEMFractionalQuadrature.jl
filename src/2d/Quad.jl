@@ -1,6 +1,6 @@
 using SpecialFunctions
 
-abstract type AbstractQuadrature2dHsNorm end
+abstract type AbstractQuadrature2dHsNorm <: AbstractQuadratureHsNorm end
 
 struct Quadrature2dHsNorm <: AbstractQuadrature2dHsNorm
     domain_quad::Matrix{Float64}
@@ -12,8 +12,9 @@ struct Quadrature2dHsNorm <: AbstractQuadrature2dHsNorm
     Cds::Float64
 
     function Quadrature2dHsNorm(diam::Float64, s::Float64, ρ::Float64)
+        d = 2
 
-        W_func(Px, Py) = Px^2 + Py^2 == 0 ? 0 : 1 / sqrt(Px^2 + Py^2)^(2 + 2 * s)
+        W_func(Px, Py) = Px^2 + Py^2 == 0 ? 0 : sqrt(Px^2 + Py^2)^(-d - 2 * s)
 
         L = 1.5 * diam - ρ
 
@@ -33,10 +34,9 @@ struct Quadrature2dHsNorm <: AbstractQuadrature2dHsNorm
 
         Kernel = KernelFFT2D(W_FFT_Matrix, (length(X), length(Y)))
 
-        C_W = real(EpsteinLib.epsteinzeta(2 + 2 * s; d=2))
+        C_W = ρ^(-2 * s) * real(EpsteinLib.epsteinzeta(d + 2 * s; d=d))
 
-        α = 2 * s
-        Cds = (2^α * (gamma(1 + s))) / (pi * abs(gamma(-s))) ## TODO: REVISE CONSTANT FOR d
+        Cds = (4^s * (gamma(d / 2 + s))) / (pi^(d / 2) * abs(gamma(-s)))
 
         return new(domain_quad, nQuad, ρ, C_W, Kernel, s, Cds)
     end
