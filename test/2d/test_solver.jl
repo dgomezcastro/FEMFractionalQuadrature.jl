@@ -1,6 +1,6 @@
 import FEMFractionalQuadrature
 using LinearAlgebra
-@testset "Test solver d=2 does not crash" begin
+@testset "Solver for d=2 WFEM works" begin
 
     s = 0.7
     h = 2.0^-3
@@ -8,6 +8,9 @@ using LinearAlgebra
 
     basis = FEMFractionalQuadrature.WFEMBasis2dDirichletUnitCircle(h, s;
         δ=P -> max(1 - norm(P)^2, 0.0))
+    # bounds = (-1.0, 1.0, -1.0, 1.0)
+    # quad = FEMFractionalQuadrature.Quadrature2dHsNorm(s, ρ, bounds)
+
     quad = FEMFractionalQuadrature.Quadrature2dHsNorm(2., s, ρ)
 
     d = 2
