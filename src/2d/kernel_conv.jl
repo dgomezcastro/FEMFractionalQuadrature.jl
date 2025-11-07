@@ -16,6 +16,7 @@ function KernelFFT2D(kernel::AbstractMatrix, data_size::Tuple{Int,Int}; use_cuda
     kernel_pad = zeros(outsize)
     kernel_pad[1:size(kernel, 1), 1:size(kernel, 2)] .= kernel
     if use_cuda
+        @info "Using CUDA for FFT computations"
         kernel_pad_cu = CuArray(kernel_pad)
         kernel_ftt = fft(kernel_pad_cu)
     else
@@ -24,7 +25,7 @@ function KernelFFT2D(kernel::AbstractMatrix, data_size::Tuple{Int,Int}; use_cuda
     return KernelFFT2D(kernel_ftt, data_size, use_cuda)
 end
 
-function convolve_padded(k::KernelFFT2D, data::AbstractMatrix)
+function convolve_padded(k::KernelFFT2D, data::AbstractMatrix)::Matrix{Float64}
     outsize = size(k.kernel_ftt)
     data_pad = zeros(outsize)
     data_pad[1:size(data, 1), 1:size(data, 2)] .= data
@@ -35,11 +36,11 @@ function convolve_padded(k::KernelFFT2D, data::AbstractMatrix)
         Fdata = fft(data_pad)
     end
     FC = k.kernel_ftt .* Fdata
-    C = real.(ifft(FC))
+    C = Matrix{Float64}(real.(ifft(FC)))
     return C
 end
 
-function convolve(k::KernelFFT2D, data::AbstractMatrix)
+function convolve(k::KernelFFT2D, data::AbstractMatrix)::Matrix{Float64}
     C = convolve_padded(k, data)
 
     N1, N2 = div.(size(C), 2)

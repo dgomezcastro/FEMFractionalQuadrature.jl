@@ -18,10 +18,9 @@ struct Quadrature2dHsNorm <: AbstractQuadrature2dHsNorm
     ρ: size of the quadrature
     bounds = (xmin, xmax, ymin, ymax) the coordinates of a box such that Ω ⊂ [xmin,xmax] × [ymin, ymax]
     """
-    function Quadrature2dHsNorm(s::Float64, ρ::Float64, bounds::Tuple{Float64,Float64,Float64,Float64})
+    function Quadrature2dHsNorm(s::Float64, ρ::Float64, bounds::Tuple{Float64,Float64,Float64,Float64}; use_cuda::Bool=false)
         d = 2
         Cds = (4^s * (gamma(d / 2 + s))) / (pi^(d / 2) * abs(gamma(-s)))
-
 
         xmin, xmax, ymin, ymax = bounds
 
@@ -38,7 +37,7 @@ struct Quadrature2dHsNorm <: AbstractQuadrature2dHsNorm
         ilength = imax - imin
         jlength = jmax - jmin
         W_FFT_Matrix = [W_func(i * ρ, j * ρ) for i in -ilength:ilength, j in -jlength:jlength]
-        Kernel = KernelFFT2D(W_FFT_Matrix, size(points))
+        Kernel = KernelFFT2D(W_FFT_Matrix, size(points), use_cuda=use_cuda)
 
         return new(domain_quad, ρ, C_W, Kernel, s, Cds)
     end
