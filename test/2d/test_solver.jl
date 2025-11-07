@@ -16,8 +16,8 @@ using LinearAlgebra
     f(x) = 1.0
     uh = solve(f, basis, quad)
 
-    us = [u(quad.domain_quad[:, k]) for k in 1:quad.nQuad]
-    uhs = [uh(quad.domain_quad[:, k]) for k in 1:quad.nQuad]
+    us = [u(quad.domain_quad[:, k]) for k in 1:FEMFractionalQuadrature.npoints(quad)]
+    uhs = [uh(quad.domain_quad[:, k]) for k in 1:FEMFractionalQuadrature.npoints(quad)]
 
     @test maximum(abs.(us - uhs)) / maximum(us) < 1e-1
 

@@ -4,7 +4,6 @@ abstract type AbstractQuadrature2dHsNorm <: AbstractQuadratureHsNorm end
 
 struct Quadrature2dHsNorm <: AbstractQuadrature2dHsNorm
     domain_quad::Matrix{Float64}
-    nQuad::Int
     ρ::Float64
     C_W::Float64
     Kernel::Any
@@ -28,7 +27,6 @@ struct Quadrature2dHsNorm <: AbstractQuadrature2dHsNorm
         Y_W = [i * ρ for i in -L/ρ:L/ρ]
 
         domain_quad = generate_quadrature_2d(-L, L, ρ)
-        ndim, nQuad = size(domain_quad)
 
         W_FFT_Matrix = [W_func(x, y) for x in X_W, y in Y_W]
 
@@ -38,10 +36,12 @@ struct Quadrature2dHsNorm <: AbstractQuadrature2dHsNorm
 
         Cds = (4^s * (gamma(d / 2 + s))) / (pi^(d / 2) * abs(gamma(-s)))
 
-        return new(domain_quad, nQuad, ρ, C_W, Kernel, s, Cds)
+        return new(domain_quad, ρ, C_W, Kernel, s, Cds)
     end
 
 end
+
+npoints(quad::Quadrature2dHsNorm) = size(quad.domain_quad, 2)
 
 
 function generate_quadrature_2d(Ra::Float64, Rb::Float64, ρ::Float64)
