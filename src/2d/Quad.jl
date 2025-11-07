@@ -21,16 +21,14 @@ struct Quadrature2dHsNorm <: AbstractQuadrature2dHsNorm
         i2 = (L - ρ / 2) / ρ
 
         X = [i * ρ for i in i1:i2]
-        Y = [i * ρ for i in i1:i2]
 
-        X_W = [i * ρ for i in -L/ρ:L/ρ]
-        Y_W = [i * ρ for i in -L/ρ:L/ρ]
+        X_W = (i * ρ for i in -L/ρ:L/ρ)
 
         domain_quad = generate_quadrature_2d(-L, L, ρ)
 
-        W_FFT_Matrix = [W_func(x, y) for x in X_W, y in Y_W]
+        W_FFT_Matrix = [W_func(x, y) for x in X_W, y in X_W]
 
-        Kernel = KernelFFT2D(W_FFT_Matrix, (length(X), length(Y)))
+        Kernel = KernelFFT2D(W_FFT_Matrix, (length(X), length(X)))
 
         C_W = ρ^(-2 * s) * real(EpsteinLib.epsteinzeta(d + 2 * s; d=d))
 
