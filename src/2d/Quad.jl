@@ -10,29 +10,27 @@ struct Quadrature2dHsNorm <: AbstractQuadrature2dHsNorm
     s::Float64
     Cds::Float64
 
-    function Quadrature2dHsNorm(diam::Float64, s::Float64, ρ::Float64)
+    function Quadrature2dHsNorm(s::Float64, ρ::Float64, bounds::Tuple{Float64,Float64,Float64,Float64})
         d = 2
+        Cds = (4^s * (gamma(d / 2 + s))) / (pi^(d / 2) * abs(gamma(-s)))
 
-        W_func(Px, Py) = Px^2 + Py^2 == 0 ? 0 : sqrt(Px^2 + Py^2)^(-d - 2 * s)
 
-        L = 1.5 * diam - ρ
+        xmin, xmax, ymin, ymax = bounds
 
-        i1 = (-L + ρ / 2) / ρ
-        i2 = (L - ρ / 2) / ρ
-
-        X = [i * ρ for i in i1:i2]
-
-        X_W = (i * ρ for i in -L/ρ:L/ρ)
-
-        domain_quad = generate_quadrature_2d(-L, L, ρ)
-
-        W_FFT_Matrix = [W_func(x, y) for x in X_W, y in X_W]
-
-        Kernel = KernelFFT2D(W_FFT_Matrix, (length(X), length(X)))
+        imin = floor(Int64, xmin / ρ)
+        jmin = floor(Int64, ymin / ρ)
+        imax = ceil(Int64, xmax / ρ)
+        jmax = ceil(Int64, ymax / ρ)
+        points = [[i * ρ, j * ρ] for i in imin:imax, j in jmin:jmax]
+        domain_quad = hcat(points...)
 
         C_W = ρ^(-2 * s) * real(EpsteinLib.epsteinzeta(d + 2 * s; d=d))
 
-        Cds = (4^s * (gamma(d / 2 + s))) / (pi^(d / 2) * abs(gamma(-s)))
+        W_func(Px, Py) = Px^2 + Py^2 == 0 ? 0 : sqrt(Px^2 + Py^2)^(-d - 2 * s)
+        ilength = imax - imin
+        jlength = jmax - jmin
+        W_FFT_Matrix = [W_func(i * ρ, j * ρ) for i in -ilength:ilength, j in -jlength:jlength]
+        Kernel = KernelFFT2D(W_FFT_Matrix, size(points))
 
         return new(domain_quad, ρ, C_W, Kernel, s, Cds)
     end
@@ -40,11 +38,3 @@ struct Quadrature2dHsNorm <: AbstractQuadrature2dHsNorm
 end
 
 npoints(quad::Quadrature2dHsNorm) = size(quad.domain_quad, 2)
-
-
-function generate_quadrature_2d(Ra::Float64, Rb::Float64, ρ::Float64)
-    xs = Ra+ρ/2:ρ:Rb-ρ/2
-    ys = Ra+ρ/2:ρ:Rb-ρ/2
-    points = [[x, y] for x in xs, y in ys]
-    return hcat(points...)
-end
