@@ -2,6 +2,7 @@ using SpecialFunctions
 
 abstract type AbstractQuadrature2dHsNorm <: AbstractQuadratureHsNorm end
 
+
 struct Quadrature2dHsNorm <: AbstractQuadrature2dHsNorm
     domain_quad::Matrix{Float64}
     ρ::Float64
@@ -9,7 +10,14 @@ struct Quadrature2dHsNorm <: AbstractQuadrature2dHsNorm
     Kernel::Any
     s::Float64
     Cds::Float64
-
+    """
+    Constructor of the quadrature
+        Quadrature2dHsNorm(s::Float64, ρ::Float64, bounds::Tuple{Float64,Float64,Float64,Float64})
+    where
+    s: fractional index
+    ρ: size of the quadrature
+    bounds = (xmin, xmax, ymin, ymax) the coordinates of a box such that Ω ⊂ [xmin,xmax] × [ymin, ymax]
+    """
     function Quadrature2dHsNorm(s::Float64, ρ::Float64, bounds::Tuple{Float64,Float64,Float64,Float64})
         d = 2
         Cds = (4^s * (gamma(d / 2 + s))) / (pi^(d / 2) * abs(gamma(-s)))
