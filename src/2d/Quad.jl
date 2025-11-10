@@ -29,6 +29,7 @@ struct Quadrature2dHsNorm <: AbstractQuadrature2dHsNorm
         imax = ceil(Int64, xmax / ρ)
         jmax = ceil(Int64, ymax / ρ)
         points = [[i * ρ, j * ρ] for i in imin:imax, j in jmin:jmax]
+        # TODO perhaps we want to keep the matrix
         domain_quad = hcat(points...)
 
         C_W = ρ^(-2 * s) * real(EpsteinLib.epsteinzeta(d + 2 * s; d=d))

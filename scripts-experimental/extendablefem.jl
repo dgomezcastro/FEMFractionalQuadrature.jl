@@ -18,7 +18,7 @@ end
 triout = example_domain_qcdt_area(maxarea=0.1)
 
 # Plot the grid using 
-Plotter = GLMakie
+Plotter = CairoMakie
 resolution = (600, 300)
 vis = GridVisualize.GridVisualizer(; Plotter, clear=true, size=resolution, show=true)
 GridVisualize.plot_triangulateio!(vis, triout; title="Triangulation")
@@ -37,7 +37,7 @@ extendablegrid = triangulateio_to_extendablegrid(triout)
 
 # Plot grid
 size = (600, 300)
-Plotter = GLMakie
+Plotter = CairoMakie
 p = gridplot(extendablegrid; Plotter, size, show=true)
 Plotter.save("figs/triout_extendablegrid.png", p)
 
