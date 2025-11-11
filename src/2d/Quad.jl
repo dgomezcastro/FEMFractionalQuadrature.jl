@@ -1,10 +1,10 @@
-using SpecialFunctions
+using SpecialFunctions, StaticArrays
 
 abstract type AbstractQuadrature2dHsNorm <: AbstractQuadratureHsNorm end
 
 
 struct Quadrature2dHsNorm <: AbstractQuadrature2dHsNorm
-    domain_quad::Matrix{Float64}
+    domain_quad::Matrix{SVector{2,Float64}}
     ρ::Float64
     C_W::Float64
     Kernel::Any
@@ -28,9 +28,7 @@ struct Quadrature2dHsNorm <: AbstractQuadrature2dHsNorm
         jmin = floor(Int64, ymin / ρ)
         imax = ceil(Int64, xmax / ρ)
         jmax = ceil(Int64, ymax / ρ)
-        points = [[i * ρ, j * ρ] for i in imin:imax, j in jmin:jmax]
-        # TODO perhaps we want to keep the matrix
-        domain_quad = hcat(points...)
+        domain_quad = [[i * ρ, j * ρ] for i in imin:imax, j in jmin:jmax]
 
         C_W = ρ^(-2 * s) * real(EpsteinLib.epsteinzeta(d + 2 * s; d=d))
 
@@ -38,11 +36,13 @@ struct Quadrature2dHsNorm <: AbstractQuadrature2dHsNorm
         ilength = imax - imin
         jlength = jmax - jmin
         W_FFT_Matrix = [W_func(i * ρ, j * ρ) for i in -ilength:ilength, j in -jlength:jlength]
-        Kernel = KernelFFT2D(W_FFT_Matrix, size(points), use_cuda=use_cuda)
+        Kernel = KernelFFT2D(W_FFT_Matrix, size(domain_quad), use_cuda=use_cuda)
 
         return new(domain_quad, ρ, C_W, Kernel, s, Cds)
     end
 
 end
 
-npoints(quad::Quadrature2dHsNorm) = size(quad.domain_quad, 2)
+xpoints(quad::Quadrature2dHsNorm) = size(quad.domain_quad, 1)
+ypoints(quad::Quadrature2dHsNorm) = size(quad.domain_quad, 2)
+npoints(quad::Quadrature2dHsNorm) = xpoints(quad) * ypoints(quad)

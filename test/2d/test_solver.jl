@@ -1,5 +1,5 @@
 import FEMFractionalQuadrature
-using LinearAlgebra, CUDA
+using SpecialFunctions, LinearAlgebra, CUDA
 @testset "Solver for d=2 WFEM works" begin
 
     s = 0.7
@@ -15,10 +15,10 @@ using LinearAlgebra, CUDA
     u(x) = max(1 - norm(x)^2, 0.0)^s * gamma(d / 2) / (4^s * gamma((d + 2 * s) / 2) * gamma(1 + s))
 
     f(x) = 1.0
-    uh = solve(f, basis, quad)
+    uh = FEMFractionalQuadrature.solve(f, basis, quad)
 
-    us = [u(quad.domain_quad[:, k]) for k in 1:FEMFractionalQuadrature.npoints(quad)]
-    uhs = [uh(quad.domain_quad[:, k]) for k in 1:FEMFractionalQuadrature.npoints(quad)]
+    us = [u(quad.domain_quad[i, j]) for i in 1:FEMFractionalQuadrature.xpoints(quad), j in 1:FEMFractionalQuadrature.ypoints(quad)]
+    uhs = [uh(quad.domain_quad[i, j]) for i in 1:FEMFractionalQuadrature.xpoints(quad), j in 1:FEMFractionalQuadrature.ypoints(quad)]
 
     @test maximum(abs.(us - uhs)) / maximum(us) < 1e-1
 
@@ -42,8 +42,8 @@ end
         f(x) = 1.0
         uh = solve(f, basis, quad)
 
-        us = [u(quad.domain_quad[:, k]) for k in 1:FEMFractionalQuadrature.npoints(quad)]
-        uhs = [uh(quad.domain_quad[:, k]) for k in 1:FEMFractionalQuadrature.npoints(quad)]
+        us = [u(quad.domain_quad[i, j]) for i in 1:FEMFractionalQuadrature.xpoints(quad), j in 1:FEMFractionalQuadrature.ypoints(quad)]
+        uhs = [uh(quad.domain_quad[i, j]) for i in 1:FEMFractionalQuadrature.xpoints(quad), j in 1:FEMFractionalQuadrature.ypoints(quad)]
 
         @test maximum(abs.(us - uhs)) / maximum(us) < 1e-1
 

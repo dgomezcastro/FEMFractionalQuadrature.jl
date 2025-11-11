@@ -7,7 +7,7 @@ struct PLFEMBasis2dNeumann <: AbstractFEM2dBasis
     neighbourtriangleofpoint::Vector{Vector{Int64}}
 
     function PLFEMBasis2dNeumann(mesh)
-        neighbourtriangleofpoint = Vector{Vector{Float64}}(undef, numberofpoints(mesh))
+        neighbourtriangleofpoint = Vector{AbstractArray}(undef, numberofpoints(mesh))
         allindexes::Vector{Int64} = 1:numberoftriangles(mesh)
         for i in eachindex(neighbourtriangleofpoint)
             isintriangles = [i in mesh.trianglelist[:, k] for k in 1:numberoftriangles(mesh)]
@@ -22,7 +22,7 @@ dimension(basis::PLFEMBasis2dNeumann) = numberofpoints(basis.mesh)
 """
 function determining if a point P is inside the triangle defined by the vertices A, B, C
 """
-function point_in_triangle(P::Vector{Float64}, A::Vector{Float64}, B::Vector{Float64}, C::Vector{Float64})
+function point_in_triangle(P::AbstractArray, A::AbstractArray, B::AbstractArray, C::AbstractArray)
     d1 = sign_area(P, A, B)
     d2 = sign_area(P, B, C)
     d3 = sign_area(P, C, A)
@@ -62,7 +62,7 @@ end
 """
 basis function on the reference element
 """
-function FEM2d_ϕhat(Phat::Vector{Float64}, khat::Int64)
+function FEM2d_ϕhat(Phat::AbstractArray, khat::Int64)
 
     if khat == 1
         return 1.0 - Phat[1] - Phat[2]
@@ -77,7 +77,7 @@ end
 """
 function evaluating the ϕ_i basis function at the point P=[P[1], P[2]] inside or outside the element K
 """
-function (basis::PLFEMBasis2dNeumann)(i::Int64, P::Vector{Float64})::Float64
+function (basis::PLFEMBasis2dNeumann)(i::Int64, P::AbstractArray)::Float64
     for index_Elem in basis.neighbourtriangleofpoint[i]
         select = basis.mesh.trianglelist[:, index_Elem]
         coord = basis.mesh.pointlist[:, select]

@@ -12,7 +12,7 @@ d = 2
 
 basis = FEMFractionalQuadrature.WFEMBasis2dDirichletUnitCircle(h, s;
     δ=P -> max(1 - norm(P)^2, 0.0))
-bounds = (-1.0, 1.0, -1.0, 1.0)
+bounds = (-1.0, 1.1, -1.0, 1.0)
 
 quad = FEMFractionalQuadrature.Quadrature2dHsNorm(s, ρ, bounds; use_cuda=false)
 
@@ -25,8 +25,8 @@ using Triangulate, ExtendableGrids, GridVisualize, SimplexGridFactory, CairoMaki
 Plotter = CairoMakie
 resolution = (600, 300)
 
-X = unique!(quad.domain_quad[1, :])
-Y = unique!(quad.domain_quad[2, :])
+X = unique!(first.(quad.domain_quad[:, 1]))
+Y = unique!(last.(quad.domain_quad[1, :]))
 uhs_nan(x) = (basis.δ(x) > 1e-5) ? uh(x) : Float64(NaN)
 uhs = [uhs_nan([x, y]) for x in X, y in Y]
 

@@ -20,9 +20,9 @@ quad = FEMFractionalQuadrature.Quadrature2dHsNorm(s, ρ, bounds; use_cuda=false)
 
 @time uh = solve(f, basis, quad)
 
-us = [u(quad.domain_quad[:, k]) for k in 1:FEMFractionalQuadrature.npoints(quad)]
+us = [u(quad.domain_quad[i, j]) for i in 1:FEMFractionalQuadrature.xpoints(quad), j in 1:FEMFractionalQuadrature.ypoints(quad)]
 # This takes a while. We can speed this up by not evaluating is all quadrature points
-uhs = [uh(quad.domain_quad[:, k]) for k in 1:FEMFractionalQuadrature.npoints(quad)]
+uhs = [uh(quad.domain_quad[i, j]) for i in 1:FEMFractionalQuadrature.xpoints(quad), j in 1:FEMFractionalQuadrature.ypoints(quad)]
 
 @show maximum(abs.(us - uhs)) / maximum(us)
 
@@ -31,8 +31,9 @@ quad = FEMFractionalQuadrature.Quadrature2dHsNorm(s, ρ, bounds; use_cuda=true)
 
 @time uh = solve(f, basis, quad)
 
-us = [u(quad.domain_quad[:, k]) for k in 1:FEMFractionalQuadrature.npoints(quad)]
-uhs = [uh(quad.domain_quad[:, k]) for k in 1:FEMFractionalQuadrature.npoints(quad)]
+us = [u(quad.domain_quad[i, j]) for i in 1:FEMFractionalQuadrature.xpoints(quad), j in 1:FEMFractionalQuadrature.ypoints(quad)]
+# This takes a while. We can speed this up by not evaluating is all quadrature points
+uhs = [uh(quad.domain_quad[i, j]) for i in 1:FEMFractionalQuadrature.xpoints(quad), j in 1:FEMFractionalQuadrature.ypoints(quad)]
 
 @show maximum(abs.(us - uhs)) / maximum(us)
 

@@ -21,7 +21,7 @@ mesh(basis::WFEMBasis2dDirichlet) = basis.basisNeumann.mesh
 """
 function evaluating the ϕ_i basis function at the point P inside or outside the element K
 """
-function (basis::WFEMBasis2dDirichlet)(i::Integer, x::Vector{Float64})::Float64
+function (basis::WFEMBasis2dDirichlet)(i::Integer, x::AbstractArray)::Float64
     return basis.δ(x)^basis.s * basis.basisNeumann(i, x)
 end
 
