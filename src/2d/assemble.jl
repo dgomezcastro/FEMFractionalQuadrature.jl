@@ -17,9 +17,7 @@ function assemble(basis::AbstractFEM2dBasis, quad::Quadrature2dHsNorm, f::Functi
     @threads for i in 1:dimension(basis)
         φ_convolved = convolve(quad.Kernel, ξ[i, :, :]) * quad.ρ^2
         for j in i:dimension(basis)
-            I1 = quad.ρ^2 * quad.C_W * dot(ξ[j, :, :], ξ[i, :, :])
-            I2 = dot(φ_convolved, ξ[j, :, :]) * quad.ρ^2
-            A[i, j] = 2 * (I1 - I2)
+            A[i, j] = Hssemiprod(quad, ξ[i, :, :], ξ[j, :, :]; u_convolved=φ_convolved)
         end
     end
 

@@ -46,3 +46,20 @@ end
 xpoints(quad::Quadrature2dHsNorm) = size(quad.domain_quad, 1)
 ypoints(quad::Quadrature2dHsNorm) = size(quad.domain_quad, 2)
 npoints(quad::Quadrature2dHsNorm) = xpoints(quad) * ypoints(quad)
+
+function Hssemiprod(quad::Quadrature2dHsNorm, u::AbstractMatrix, v::AbstractMatrix; u_convolved=convolve(quad.Kernel, u) * quad.ρ^2)
+    I1 = quad.ρ^2 * quad.C_W * dot(v, u)
+    I2 = dot(u_convolved, v) * quad.ρ^2
+    return 2 * (I1 - I2)
+end
+
+function Hssemiprod(quad::Quadrature2dHsNorm, u::Function, v::Function)
+    U = [u([x, y]) for x in X, y in Y]
+    V = [v([x, y]) for x in X, y in Y]
+    return Hssemiprod(quad, U, V)
+end
+
+function Hsseminorm(quad::Quadrature2dHsNorm, u::Function)
+    U = [u([x, y]) for x in X, y in Y]
+    return sqrt(Hssemiprod(quad, U, U))
+end
