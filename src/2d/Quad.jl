@@ -1,7 +1,8 @@
 using SpecialFunctions, StaticArrays
 
-abstract type AbstractQuadrature2dHsNorm <: AbstractQuadratureHsNorm end
+import EpsteinLib
 
+abstract type AbstractQuadrature2dHsNorm <: AbstractQuadratureHsNorm end
 
 struct Quadrature2dHsNorm <: AbstractQuadrature2dHsNorm
     domain_quad::Matrix{SVector{2,Float64}}
