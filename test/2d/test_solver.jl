@@ -17,8 +17,8 @@ using SpecialFunctions, LinearAlgebra, CUDA
     f(x) = 1.0
     uh = FEMFractionalQuadrature.solve(f, basis, quad)
 
-    us = [u(quad.domain_quad[i, j]) for i in 1:FEMFractionalQuadrature.xpoints(quad), j in 1:FEMFractionalQuadrature.ypoints(quad)]
-    uhs = [uh(quad.domain_quad[i, j]) for i in 1:FEMFractionalQuadrature.xpoints(quad), j in 1:FEMFractionalQuadrature.ypoints(quad)]
+    us = FEMFractionalQuadrature.evaluate(quad, u)
+    uhs = FEMFractionalQuadrature.evaluate(quad, x -> uh(x))
 
     @test maximum(abs.(us - uhs)) / maximum(us) < 1e-1
 
@@ -40,10 +40,10 @@ end
         u(x) = max(1 - norm(x)^2, 0.0)^s * gamma(d / 2) / (4^s * gamma((d + 2 * s) / 2) * gamma(1 + s))
 
         f(x) = 1.0
-        uh = solve(f, basis, quad)
+        uh = FEMFractionalQuadrature.solve(f, basis, quad)
 
-        us = [u(quad.domain_quad[i, j]) for i in 1:FEMFractionalQuadrature.xpoints(quad), j in 1:FEMFractionalQuadrature.ypoints(quad)]
-        uhs = [uh(quad.domain_quad[i, j]) for i in 1:FEMFractionalQuadrature.xpoints(quad), j in 1:FEMFractionalQuadrature.ypoints(quad)]
+        us = FEMFractionalQuadrature.evaluate(quad, u)
+        uhs = FEMFractionalQuadrature.evaluate(quad, x -> uh(x))
 
         @test maximum(abs.(us - uhs)) / maximum(us) < 1e-1
 
