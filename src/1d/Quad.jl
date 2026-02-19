@@ -29,6 +29,10 @@ end
 
 kernelconv(quad, V) = quad.ρ * quad.W_Matrix * V
 
+function evaluate(quad::Quadrature1dHsNorm, u::Function)::AbstractVector
+    return [u(quad.domain_quad[i]) for i in 1:length(quad.domain_quad)]
+end
+
 function Hssemiprod(quad::Quadrature1dHsNorm, U::AbstractVector, V::AbstractVector; convV=kernelconv(quad, V))
     I1 = quad.ρ * quad.C_W * U'V
     I2 = quad.ρ * U'convV
