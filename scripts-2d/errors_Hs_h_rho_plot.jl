@@ -29,6 +29,7 @@ for (k, s) in enumerate(ss)
         dict = load(filename)
         hs = dict["hs"]
         errsHs = dict["errsHs"]
+        errsHs = sqrt.(errsHs)
 
         dx = 0.025 * (maximum(hs) - minimum(hs))
         xlims = (minimum(hs) - dx, maximum(hs) + dx)
