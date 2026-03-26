@@ -61,6 +61,6 @@ function WFEM2d_generate_mesh_UnitCircle(h::Float64)
 end
 
 function WFEMBasis2dDirichletUnitCircle(h::Float64, s::Float64; δ::Function=P -> max(1 - norm(P)^2, 0.0))
-    mesh = generate_mesh_UnitCircle(h)
+    mesh = WFEM2d_generate_mesh_UnitCircle(h)
     return WFEMBasis2dDirichlet(s, mesh, δ)
 end
