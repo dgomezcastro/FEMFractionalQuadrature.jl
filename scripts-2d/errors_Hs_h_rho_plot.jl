@@ -3,15 +3,15 @@ using LinearAlgebra, LaTeXStrings, Plots, SpecialFunctions, JLD2, Plots.Measures
 
 dist_p = 4
 
-ss = [0.1, 0.2]
+ss = [0.1, 0.2, 0.4, 0.6]
 
-ρs = [2^-5, 2^-6, 2^-7]
-rho_labels = ["2^{-5}", "2^{-6}", "2^{-7}"]
+ρs = [2^-7, 2^-8, 2^-9]
+rho_labels = ["2^{-7}", "2^{-8}", "2^{-9}"]
 
 logocolors = Colors.JULIA_LOGO_COLORS
 COLORS = ["orange", "royalblue1", "mediumorchid", "green4", "red2"]
 
-slopes = zeros(4, length(ss))
+slopes = zeros(length(ρs), length(ss))
 
 global plt = plot(
     size=(1300, 1000),
@@ -30,6 +30,7 @@ for (k, s) in enumerate(ss)
         hs = dict["hs"]
         errsHs = dict["errsHs"]
         errsHs = sqrt.(errsHs)
+        uh_coeffs = dict["uh_coeff"]
 
         dx = 0.025 * (maximum(hs) - minimum(hs))
         xlims = (minimum(hs) - dx, maximum(hs) + dx)
@@ -40,7 +41,7 @@ for (k, s) in enumerate(ss)
 
         plot!(plt, hs, errsHs, color=COLORS[k], marker=:circle, markersize=8, markerstrokewidth=0, label="", xlims=xlims)
         annotate!(plt, hs[end] / 1.05, errsHs[end], text(latexstring("\\rho= ") * latexstring(rho_labels[kk]), 12, :right, COLORS[k]))
-        if ρ == 2^-6
+        if kk == 1
             cs = (errsHs) ./ (hs .^ (2 - s))
             c = sum(cs) / length(cs)
             hs_extended = sort(hs)
