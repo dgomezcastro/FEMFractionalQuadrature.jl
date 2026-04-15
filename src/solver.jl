@@ -12,3 +12,13 @@ function solve(f::Function, basis::AbstractFEMBasis, quad::AbstractQuadratureHsN
     return FEVector(basis, coeffs)
 end
 
+function solve_extranodes(f::Function, basis::AbstractFEMBasis, quad::AbstractQuadratureHsNorm)
+    A, b = assemble(basis, quad, f)
+    mask = nodes_triangles_intersection_unit_circle(basis.basisNeumann.mesh)
+    @debug "Solving linear system"
+    coeffs = A[mask, mask] \ b[mask]
+    full_coeffs = zeros(dimension(basis))
+    full_coeffs[mask] = coeffs
+    return FEVector(basis, full_coeffs)
+end
+

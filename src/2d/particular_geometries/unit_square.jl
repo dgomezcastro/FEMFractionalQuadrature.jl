@@ -58,5 +58,29 @@ function nodes_in_unit_circle(triout::Triangulate.TriangulateIO)
     return vec(sum(nodes .^ 2, dims=1) .< 1.0)
 end
 
+function nodes_triangles_intersection_unit_circle(triout::Triangulate.TriangulateIO)
+    nodes = triout.pointlist
+    triangles = triout.trianglelist
+
+    n_nodes = size(nodes, 2)
+    n_triangles = size(triangles, 2)
+
+    inside = vec(sum(nodes .^ 2, dims=1) .< 1.0)
+
+    node_mask = falses(n_nodes)
+
+    for t in 1:n_triangles
+        i, j, k = triangles[:, t]
+
+        if inside[i] || inside[j] || inside[k]
+            node_mask[i] = true
+            node_mask[j] = true
+            node_mask[k] = true
+        end
+    end
+
+    return node_mask
+end
+
 
 
