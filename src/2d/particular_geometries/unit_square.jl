@@ -53,4 +53,10 @@ function WFEMBasis2dDirichletUnitCircle_Square(h::Float64, s::Float64; δ::Funct
     return WFEMBasis2dDirichlet(s, mesh, δ)
 end
 
+function nodes_in_unit_circle(triout::Triangulate.TriangulateIO)
+    nodes = triout.pointlist
+    return vec(sum(nodes .^ 2, dims=1) .< 1.0)
+end
+
+
 
