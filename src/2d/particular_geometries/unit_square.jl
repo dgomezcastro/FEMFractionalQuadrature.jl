@@ -1,3 +1,6 @@
+
+
+
 function generate_mesh_UnitSquare(h::Float64)
 
     hh = h^2 / 2 #area of each triangle
@@ -14,4 +17,40 @@ function generate_mesh_UnitSquare(h::Float64)
     return triout
 
 end
+
+
+function WFEM2d_generate_mesh_Square(h::Float64, b::Float64)
+
+    n = Int(2b / h)
+
+    xs = collect(range(-b, b, length=n + 1))
+    ys = collect(range(-b, b, length=n + 1))
+
+    points = [(x, y) for y in ys for x in xs]
+
+    node(i, j) = j * (n + 1) + i + 1
+
+    tris = Vector{NTuple{3,Int}}()
+    for j in 0:n-1, i in 0:n-1
+        p1 = node(i, j)
+        p2 = node(i + 1, j)
+        p3 = node(i + 1, j + 1)
+        p4 = node(i, j + 1)
+
+        push!(tris, (p1, p2, p3))
+        push!(tris, (p1, p3, p4))
+    end
+
+    triout = Triangulate.TriangulateIO()
+    triout.pointlist = reshape(vcat([Float64[x, y] for (x, y) in points]...), 2, :)
+    triout.trianglelist = reshape(vcat([Int32[a, b, c] for (a, b, c) in tris]...), 3, :)
+
+    return triout
+end
+
+function WFEMBasis2dDirichletUnitCircle_Square(h::Float64, s::Float64; δ::Function=P -> max(1 - norm(P)^2, 0.0))
+    mesh = WFEM2d_generate_mesh_Square(h, 1.0)
+    return WFEMBasis2dDirichlet(s, mesh, δ)
+end
+
 
