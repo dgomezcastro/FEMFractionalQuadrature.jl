@@ -103,16 +103,43 @@ function integral(basis::PLFEMBasis2dNeumann, i, f::Function)
     for k in 1:numberoftriangles(basis.mesh)
 
         v = triangles[:, k]
-        p1 = points[:, v[1]]
-        p2 = points[:, v[2]]
-        p3 = points[:, v[3]]
+        v1 = points[:, v[1]]
+        v2 = points[:, v[2]]
+        v3 = points[:, v[3]]
+
+        p1 = v1
+        p2 = v2
+        p3 = v3
 
         f_barycenter = 1 / 3 * (basis(i, p1) * f(p1) + basis(i, p2) * f(p2) + basis(i, p3) * f(p3))
 
-        area = 0.5 * abs((p2[1] - p1[1]) * (p3[2] - p1[2]) - (p3[1] - p1[1]) * (p2[2] - p1[2]))
+        area = 0.5 * abs((v2[1] - v1[1]) * (v3[2] - v1[2]) - (v3[1] - v1[1]) * (v2[2] - v1[2]))
 
         integral += area * f_barycenter
     end
 
     return integral
+end
+
+function integral_fine(basis::PLFEMBasis2dNeumann, i, f::Function, int_h::Float64)
+    points = basis.mesh.pointlist
+    xs = points[1, :]
+    ys = points[2, :]
+    xmin = minimum(xs)
+    xmax = maximum(xs)
+    ymin = minimum(ys)
+    ymax = maximum(ys)
+
+    xs_box = (xmin+int_h/2):int_h:(xmax-int_h/2)
+    ys_box = (ymin+int_h/2):int_h:(ymax-int_h/2)
+
+    integral = 0.0
+    for x in xs_box
+        for y in ys_box
+            p = [x, y]
+            integral += basis(i, p) * f(p)
+        end
+    end
+
+    return integral * int_h^2
 end
