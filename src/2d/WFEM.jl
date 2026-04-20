@@ -27,6 +27,6 @@ end
 
 function integral(basis::WFEMBasis2dDirichlet, i, f::Function)
     g(x) = f(x) * basis.δ(x)^basis.s
-    return integral(basis.basisNeumann, i, g)
+    return integral_fine(basis.basisNeumann, i, g, 2^-7)
 end
 
