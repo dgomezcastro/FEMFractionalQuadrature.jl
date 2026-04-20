@@ -12,8 +12,9 @@ function convergence2d_rho(s::Number, hs::Vector{Float64}, ρ::Float64;)
     u_exact(x) = max(1 - norm(x)^2, 0.0)^s * gamma(d / 2) / (4^s * gamma((d + 2 * s) / 2) * gamma(1 + s))
 
 
-    ρ_fine = 2.0^-6
-    bounds = (-1.0, 1.1, -1.0, 1.0)
+    ρ_fine = 2^-12
+    @show ρ_fine
+    bounds = (-1.0, 1.0, -1.0, 1.0)
     quad_fine = FEMFractionalQuadrature.Quadrature2dHsNorm(s, ρ_fine, bounds; use_cuda=true)
 
     X = unique!(first.(quad_fine.domain_quad[:, 1]))
@@ -31,9 +32,9 @@ function convergence2d_rho(s::Number, hs::Vector{Float64}, ρ::Float64;)
     for (j, h) in enumerate(hs)
         @show j / length(hs)
 
-        basis = FEMFractionalQuadrature.WFEMBasis2dDirichletUnitCircle(h, s; δ=δfun)
+        basis = FEMFractionalQuadrature.WFEMBasis2dDirichletUnitCircle_Square(h, s; δ=δfun)
 
-        @time uh = solve(f, basis, quad)
+        @time uh = FEMFractionalQuadrature.solve_extranodes(f, basis, quad)
 
         uhs = [uh([x, y]) for x in X, y in Y]
 
@@ -42,6 +43,8 @@ function convergence2d_rho(s::Number, hs::Vector{Float64}, ρ::Float64;)
         uhs_coeffs[j] = uh.coeffs
 
     end
+
+    @show errsHs, errsL2
 
     d = Dict("s" => s, "hs" => hs, "errsHs" => errsHs, "errsL2" => errsL2, "uh_coeff" => uhs_coeffs)
     save(filename * "rho$(ρ)_" * ".jld2", d)
