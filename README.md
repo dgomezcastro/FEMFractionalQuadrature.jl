@@ -4,8 +4,9 @@
 
 This code in this repository solves the fractional Dirichlet problem
 
-$\begin{cases} (-\Delta)^s u = f & \text{in } \Omega \\ u = 0 &\text{in } \mathbb R^d \setminus \Omega \end{cases}$
-
+```math
+\begin{cases} (-\Delta)^s u = f & \text{in } \Omega \\ u = 0 &\text{in } \mathbb R^d \setminus \Omega \end{cases}
+```
 using the FEM method with weighted basis functions, as presented in 
 
 * F. del Teso, S. Fronzoni, D. Gómez-Castro. _Finite Elements with weighted bases for the fractional Laplacian_. [https://arxiv.org/abs/2511.01727](https://arxiv.org/abs/2511.01727)
