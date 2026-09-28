@@ -12,7 +12,7 @@ using the FEM method with weighted basis functions, as presented in
 
 The approximation of the bilinear form is performed by quadrature of the singular integral on a uniform mesh of size $\rho$.
 
-At this stage, the package deals with the one-dimensional problem $\Omega = (a,b)$.  
+At this stage, the package deals with the one-dimensional and two-dimensional problems.
 
 ## Set up
 
@@ -23,7 +23,7 @@ Pkg.activate(".");
 Pkg.instantiate();
 ```
 
-## Minimal example
+## Minimal example in dimension $d=1$
 
 ```julia 
 using FEMFractionalQuadrature, Plots
