@@ -17,7 +17,7 @@ At this stage, the package deals with the one-dimensional and two-dimensional pr
 
 ## Set up
 
-Clone this repo with julia 1.12.1 and set up dependencies by running
+Clone this repo with julia and set up dependencies by running
 ```julia
 using Pkg;
 Pkg.activate(".");
