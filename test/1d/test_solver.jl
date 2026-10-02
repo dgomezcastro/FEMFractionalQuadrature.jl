@@ -1,6 +1,6 @@
 using SpecialFunctions
 
-@testset "Solver works from WFEM" begin
+@testset "Solver works for d=1 WFEM" begin
     a = -1.
     b = 1.
     s = 0.4
@@ -27,7 +27,7 @@ using SpecialFunctions
     @test FEMFractionalQuadrature.L2norm1d(a, b, x -> u(x) - uh(x), ρfine) < 3e-2
 end
 
-@testset "Solver works from FEM" begin
+@testset "Solver works for d=1 FEM" begin
     a = -1.
     b = 1.
     s = 0.4

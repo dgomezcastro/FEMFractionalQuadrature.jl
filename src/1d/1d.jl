@@ -1,4 +1,4 @@
-abstract type AbstractFEM1dBasis end
+abstract type AbstractFEM1dBasis <: AbstractFEMBasis end
 
 include("FEM.jl")
 include("WFEM.jl")
